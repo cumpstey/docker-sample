@@ -3,22 +3,14 @@ services:
   api:
     build:
         context: "./DockerSample.Api/"
-        #dockerfile: "Dockerfile"
     container_name: api
-    #image: "bmw-osp-deployer"
-    #working_dir: "/home"
-    #volumes:
-        # Shared volume where we can build the source bundles
-        #- "deploytool-build:/deploytool-build"
-
-        # Allow container to run sibling dockers
-        #- "/var/run/docker.sock:/var/run/docker.sock"
-
-        # Allow container to use host's ssh keys
-        #- "$HOME/.ssh:/root/.ssh"
-
-        # Mount the deploy script into bin dir
-        #- "./bin:/home/bin"
     #env_file: ".env"
     ports:
     - "5001:80"
+  api2:
+    build:
+        context: "./DockerSample.Api2/"
+    container_name: api2
+    #env_file: ".env"
+    ports:
+    - "5002:80"

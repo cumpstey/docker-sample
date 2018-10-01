@@ -17,9 +17,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using AutoMapper;
 using Swashbuckle.AspNetCore.Swagger;
-using DockerSample.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using DockerSample.Api.Entities;
 
 namespace DockerSample.Api
 {
@@ -49,6 +50,14 @@ namespace DockerSample.Api
         {
             services.AddCors();
             services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = false;
+            })
+            .AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAutoMapper();
 
@@ -68,19 +77,19 @@ namespace DockerSample.Api
             {
                 x.Events = new JwtBearerEvents
                 {
-                    OnTokenValidated = context =>
-                    {
-                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-                        var userId = Guid.Parse(context.Principal.Identity.Name);
-                        var user = userService.GetById(userId);
-                        if (user == null)
-                        {
-                            // Return unauthorized if user no longer exists
-                            context.Fail("Unauthorized");
-                        }
+                    //OnTokenValidated = context =>
+                    //{
+                    //    var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                    //    var userId = Guid.Parse(context.Principal.Identity.Name);
+                    //    var user = userService.GetById(userId);
+                    //    if (user == null)
+                    //    {
+                    //        // Return unauthorized if user no longer exists
+                    //        context.Fail("Unauthorized");
+                    //    }
 
-                        return Task.CompletedTask;
-                    }
+                    //    return Task.CompletedTask;
+                    //}
                 };
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
@@ -94,9 +103,10 @@ namespace DockerSample.Api
             });
 
             // Configure dependency resolver for application services
-            services.AddSingleton<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<IUserService, UserService>();
             services.AddSingleton<DatabaseSeeder, DatabaseSeeder>();
+            //services.AddScoped<UserManager<User>, UserManager<User>>();
+            //services.AddScoped<SignInManager<User>, SignInManager<User>>();
+
 
             // Register the Swagger generator
             services.AddSwaggerGen(c =>
@@ -136,10 +146,18 @@ namespace DockerSample.Api
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ILoggerFactory loggerFactory,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager
+        )
         {
             if (env.IsDevelopment())
             {
+                Task.Run(() => SeedRoles(roleManager)).Wait();
+                Task.Run(() => SeedUsers(userManager)).Wait();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -171,6 +189,47 @@ namespace DockerSample.Api
             });
 
             app.UseMvc();
+        }
+
+        private async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            // In Startup iam creating first Admin Role and creating a default Admin User    
+            if (!await roleManager.RoleExistsAsync("Administrator"))
+            {
+                // first we create Admin rool   
+                var role = new IdentityRole("Administrator");
+                var result = await roleManager.CreateAsync(role);
+
+            }
+        }
+
+        private async Task SeedUsers(UserManager<ApplicationUser> userManager)
+        {
+            userManager.PasswordValidators.Clear();
+            userManager.UserValidators.Clear();
+
+            //Here we create a Admin super user who will maintain the website                  
+            var admin = new ApplicationUser
+            {
+                UserName = "admin@example.com",
+                Email = "admin@example.com",
+                FirstName = "Bob",
+                LastName = "Jones",
+            };
+            var adminResult = await userManager.CreateAsync(admin, "Password[1]");
+            if (adminResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(admin, "Administrator");
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = "user@example.com",
+                Email = "user@example.com",
+                FirstName = "John",
+                LastName = "Smith",
+            };
+            var userResult = await userManager.CreateAsync(user, "Password[1]");
         }
     }
 }

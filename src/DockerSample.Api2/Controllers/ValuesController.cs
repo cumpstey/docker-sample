@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DockerSample.Api.Controllers
@@ -16,6 +17,16 @@ namespace DockerSample.Api.Controllers
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };
+        }
+
+        /// <summary>
+        /// Gets all values
+        /// </summary>
+        [HttpGet("getadmin")]
+        [Authorize(Roles = "Administrator")]
+        public ActionResult<IEnumerable<string>> GetAdmin()
+        {
+            return new string[] { "value3", "value4" };
         }
 
         /// <summary>

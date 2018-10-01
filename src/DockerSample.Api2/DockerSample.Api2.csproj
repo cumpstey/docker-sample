@@ -3,12 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <UserSecretsId>d3ddf47b-23b0-44dd-9d25-8f7caea46e97</UserSecretsId>
+    <UserSecretsId>c8fb5828-d42a-4f9f-ab38-39c0ec858c06</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-  </PropertyGroup>
-  
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!--<NoWarn>$(NoWarn);1591</NoWarn>-->
@@ -16,6 +13,11 @@
   
   <ItemGroup>
     <Compile Remove="Controllers\UsersController.cs" />
+    <Compile Remove="Entities\UserRole.cs" />
+    <Compile Remove="Services\IPasswordHasher.cs" />
+    <Compile Remove="Services\IUserService.cs" />
+    <Compile Remove="Services\PasswordHasher.cs" />
+    <Compile Remove="Services\UserService.cs" />
   </ItemGroup>
 
   <ItemGroup>
