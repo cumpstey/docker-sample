@@ -1,0 +1,29 @@
+.square-icon {
+  border-radius: 4px;
+  width: 44px;
+  height: 44px;
+  fill: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.square-icon svg {
+  width: 25px;
+}
+
+.square-icon--blue {
+  background-color: #1991EB;
+  background-image: linear-gradient(-1deg, #1991EB 2%, #2DA1F8 98%);
+}
+
+.square-icon--green {
+  background-color: #39B54A;
+  background-image: linear-gradient(-180deg, #39B54A 0%, #34AA44 98%);
+}
+
+.square-icon--disabled {
+  background-color: #E8EAF1;
+  background-image: none;
+  fill: #8D909F;
+}

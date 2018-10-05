@@ -1,0 +1,175 @@
+.header {
+  height: 70px;
+  padding: 0 30px;
+  background-color: white;
+  border-bottom: 1px solid #e6eaee;
+  z-index: 99;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.header a {
+  color: inherit;
+}
+
+.header a:hover {
+  text-decoration: none;
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.header-options {
+  display: flex;
+  align-items: center;
+}
+
+.header-options .button {
+  margin-left: 30px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  margin-right: 40px;
+  white-space: nowrap;
+}
+
+.header-logo .logo {
+  width: 68px;
+}
+
+/* .header-logo-text {
+  font-weight: 600;
+}
+
+.header-logo .square-icon {
+  margin-right: 25px;
+} */
+
+.header-nav {
+  display: flex;
+  color: #9FA9BA;
+  height: 100%;
+}
+
+.header-nav-item {
+  margin-right: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: color 100ms;
+}
+
+.header-nav-item:hover {
+  color: #354052;
+}
+
+.header-nav-item span {
+  position: relative;
+}
+
+.header-nav-item:last-child {
+  margin-right: 0;
+}
+
+.header-account {
+  fill: #A1A7AF;
+  margin-left: 25px;
+  position: relative;
+}
+
+.header-account-toggle {
+  display: flex;
+  color: #9FA9BA;
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.header-account-toggle svg {
+  width: 15px;
+  height: 15px;
+  margin-left: 10px;
+}
+
+.header-account .menu {
+  position: absolute;
+  top: 44px;
+  right: 0px;
+  width: 370px;
+}
+
+.header-mobile-menu {
+  display: none;
+}
+
+.header-nav-background {
+  display: none;
+}
+
+@media screen and (max-width: 1024px) {
+
+  .app--mobile-nav-visible .header-nav {
+    display: flex;
+  }
+
+  .header {
+    padding: 0 30px 0 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .header-nav {
+    display: none;
+    position: fixed;
+    top: 70px;
+    width: 200px;
+    height: calc(100vh - 70px);
+    left: 0px;
+    background-color: white;
+    flex-direction: column;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+    padding-top: 20px;
+  }
+
+  .header-nav-item {
+    margin-right: 0px;
+    padding: 20px 30px;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .header-mobile-menu {
+    box-sizing: content-box;
+    display: block;
+    width: 25px;
+    height: 25px;
+    padding: 10px;
+    margin-right: 15px;
+    cursor: pointer;
+    fill: #7383a1;
+  }
+
+  .app--mobile-nav-visible .header-nav-background {
+    display: block;
+  }
+
+  .header-nav-background {
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}

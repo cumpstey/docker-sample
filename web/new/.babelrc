@@ -1,0 +1,4 @@
+{
+  "presets": ["react", "latest", "stage-2", "env"],
+  "plugins": ["transform-object-rest-spread", "transform-class-properties"]
+}

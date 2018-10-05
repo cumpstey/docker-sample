@@ -1,0 +1,23 @@
+version: "3"
+services:
+    frontend:
+        image: "node:8.9.4-alpine"
+        user: "node"
+        working_dir: "/home/node/app"
+        #image: "bmw-osp-web-app-dev"
+        #mem_limit: "300M"
+        #memswap_limit: "1G"
+        volumes:
+            # Mount the entire project folder into the node dir
+            - "./:/home/node/app/:rw"
+
+            # On the assumption that the project folder is a Windows folder mapped
+            # through Virtualbox, it wont be possible to create symlinks in this folder.
+            # This means `npm install` will fail. As a work around, we can create
+            # the node_modules folder on the Linux side and mount that into the docker
+            #- "~/bmw-osp-web-node_modules:/home/node/app/node_modules"
+        environment:
+            - "NODE_ENV=development"
+        ports:
+            - "5000:8083"
+        command: "npm start"

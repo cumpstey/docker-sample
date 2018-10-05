@@ -1,0 +1,65 @@
+.layout-anonymous {
+  height: 100%;
+  background-color: #212531;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.layout-anonymous-quote-wrapper {
+  font-family: 'BMW Group Condensed', 'Arial-BoldMT', Arial, sans-serif;
+  width: 100%;
+  margin-left: 7%;
+  margin-top: -7%;
+  max-width: 49%;
+  color: white;
+  font-size: 48px;
+  line-height: 1em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.layout-anonymous-quote-small {
+  font-size: 30%;
+}
+
+.layout-anonymous-header {
+  height: 96px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 0 32px;
+}
+
+.layout-anonymous-header .bmw-group-logo {
+  width: 68px;
+}
+
+.layout-anonymous-header .logo-bmw {
+  width: 32px;
+}
+
+.layout-anonymous-header .logo-mini {
+  margin-left: 11px;
+  width: 55px;
+}
+
+.layout-anonymous-header .brand-logos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.layout-anonymous-body {
+  height: calc(100% - 96px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 1024px) {
+  .layout-anonymous-quote-wrapper {
+    display: none;
+  }
+}

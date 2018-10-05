@@ -1,0 +1,22 @@
+.dropdown-menu-background {
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.dropdown-menu .menu {
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+.dropdown-menu .menu-item:hover {
+  background-color: #1A91EB;
+  color: white;
+}
+
+.dropdown-menu .menu-item:hover .menu-item-description {
+  color: rgba(248,250,252,0.6);
+}
