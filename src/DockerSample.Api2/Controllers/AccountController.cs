@@ -10,6 +10,8 @@ using DockerSample.Api.Dtos;
 using DockerSample.Api.Dtos.Account;
 using DockerSample.Api.Entities;
 using DockerSample.Api.Helpers;
+using DockerSample.Api.Services;
+using DockerSample.Api.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,13 +29,15 @@ namespace DockerSample.Api.Controllers
     {
         #region Fields
 
-        private UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        private SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        private IMapper _mapper;
+        private readonly IEmailSender _emailSender;
 
-        private readonly AppSettings _appSettings;
+        private readonly IMapper _mapper;
+
+        private readonly ApplicationSettings _appSettings;
 
         #endregion
 
@@ -42,18 +46,22 @@ namespace DockerSample.Api.Controllers
         /// <summary>
         /// Initialises a new instance of the <see cref="AccountController"/> class.
         /// </summary>
-        /// <param name="userService">User service</param>
+        /// <param name="userManager">User manager</param>
+        /// <param name="signInManager">Sign in manager</param>
+        /// <param name="emailSender">Email sender</param>
         /// <param name="mapper">Mapper</param>
         /// <param name="appSettings">Settings</param>
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            IEmailSender emailSender,
             IMapper mapper,
-            IOptions<AppSettings> appSettings
+            IOptions<ApplicationSettings> appSettings
         )
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -80,45 +88,46 @@ namespace DockerSample.Api.Controllers
             if (!result.Succeeded)
             {
                 // TODO: Different messaging if user is locked out rather than just not exists.
-                return Unauthorized();
+                return Unauthorized(new { Errors = new[] { new IdentityError { Code = "UserNotFound", Description = "User not found" } } });
             }
 
             // Retrieve authenticated user
             var user = await _userManager.FindByEmailAsync(request.Email);
+            if (!user.EmailConfirmed)
+            {
+                return Unauthorized(new { Errors = new[] { new IdentityError { Code = "EmailNotVerified", Description = "Please verify your email address by clicking the link in the email you have been sent" } } });
+            }
+
+            // Retrieve roles to which the user is assigned
             var roles = await _userManager.GetRolesAsync(user);
 
             // Generate JWT token to return in the response
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+
             var claims = new List<Claim>() { new Claim(ClaimTypes.Name, user.Id.ToString()) };
             claims.AddRange(roles.Select(i => new Claim(ClaimTypes.Role, i)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                //Subject = new ClaimsIdentity(new Claim[]
-                //{
-                //    new Claim(ClaimTypes.Name, user.Id.ToString()),
-                //    //new Claim(ClaimTypes.Role, user.Roles[0].Name),
-                //}),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            // Return basic user info (without password) and token to store client side
+            // Return basic user info and token to store client side
             return Ok(new AuthenticateResponseDto
             {
                 Token = tokenString,
-                User = new UserDto
-                {
-                    //Id = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Roles = roles.ToArray(),
-                },
+                //User = new UserDto
+                //{
+                //    Email = user.Email,
+                //    FirstName = user.FirstName,
+                //    LastName = user.LastName,
+                //    Roles = roles.ToArray(),
+                //},
             });
         }
 
@@ -128,44 +137,28 @@ namespace DockerSample.Api.Controllers
         /// <param name="request">Request object containing user details</param>
         /// <returns>Details of the newly-created user</returns>
         /// <response code="201">Returns the newly created item</response>
-        /// <response code="400">If the item cannot be created</response>            
+        /// <response code="400">If the item cannot be created</response>
         [AllowAnonymous]
-        [HttpPost("register")]
+        [HttpPost("register-without-email-verification")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task< IActionResult> Register([FromBody]RegisterRequestDto request)
+        public async Task<IActionResult> RegisterWithoutEmailVerification([FromBody]RegisterRequestDto request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // Map dto to entity
             var user = _mapper.Map<ApplicationUser>(request);
 
-            //foreach (var validator in _userManager.UserValidators)
-            //{
-            //    var validationResult = await validator.ValidateAsync(_userManager, user);
-            //}
-
-            //foreach(var validator in _userManager.PasswordValidators)
-            //{
-            //    var validationResult = await validator.ValidateAsync(_userManager, user, request.Password);
-            //}
-
-            // TODO: write validators to do what we actually want!
-            _userManager.PasswordValidators.Clear();
-            _userManager.UserValidators.Clear();
-
             // Create new user. This should incorporate a process to verify that the user owns the email address.
-            var result = await _userManager.CreateAsync(user);
+            var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                // TODO: Verify this result
-                var passwordResult = await _userManager.AddPasswordAsync(user, request.Password);
-
-                if (request.IsAdmin)
-                {
-                    // TODO: Verify this result
-                    var roleResult = await _userManager.AddToRoleAsync(user, "Administrator");
-                }
-
                 var userDto = _mapper.Map<UserDto>(user);
+                userDto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+
                 return Created($"/{ApiRoot}account", userDto);
             }
             else
@@ -176,21 +169,109 @@ namespace DockerSample.Api.Controllers
         }
 
         /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="request">Request object containing user details</param>
+        /// <returns>Details of the newly-created user</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item cannot be created</response>
+        [HttpPost("register")]
+        [AllowAnonymous]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Register([FromBody]RegisterRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Map dto to entity
+            var user = _mapper.Map<ApplicationUser>(request);
+
+            // Create new user
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (result.Succeeded)
+            {
+                // Send email with verification link
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var callbackUrl = Url.GetEmailVerificationLink(user.Id, token);
+                await _emailSender.SendEmailConfirmationAsync(request.Email, callbackUrl);
+
+                // Return details of created user
+                var userDto = _mapper.Map<UserDto>(user);
+                userDto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+
+                return Created($"/{ApiRoot}account", userDto);
+            }
+            else
+            {
+                return BadRequest(new { result.Errors });
+            }
+        }
+
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="request">Request object containing user details</param>
+        /// <returns>Details of the newly-created user</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item cannot be created</response>
+        [HttpPut("verify-email")]
+        [AllowAnonymous]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> VerifyEmail([FromBody]VerifyEmailRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user == null)
+            {
+                return BadRequest(new
+                {
+                    Errors = new[] { new IdentityError { Code = "UserNotFound", Description = "User not found" } }
+                });
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, request.Token);
+            if (result.Succeeded)
+            {
+                // TODO: Is 200 the right response code here? Probably.
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(new { result.Errors });
+            }
+        }
+
+        /// <summary>
         /// Retrieves details of the logged-in user.
         /// </summary>
         /// <returns>User details</returns>
         /// <response code="200">Returns the user details</response>
-        [HttpGet]
+        /// <response code="400">If the user specified in the token no longer exists</response>
+        [HttpGet("me")]
         [ProducesResponseType(200)]
-        public IActionResult Get()
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Get()
         {
-            // Find id of currently logged-in user
-            //var id = Guid.Parse(ControllerContext.HttpContext.User.Identity.Name);
+            var user = await _userManager.FindByIdAsync(ControllerContext.HttpContext.User.Identity.Name);
+            if (user == null)
+            {
+                return BadRequest(new
+                {
+                    Errors = new[] { new IdentityError { Code = "UserNotFound", Description = "User not found" } }
+                });
+            }
 
-            //var user = _userService.GetById(id);
-
-            var user = _userManager.FindByNameAsync(ControllerContext.HttpContext.User.Identity.Name);
             var userDto = _mapper.Map<UserDto>(user);
+            userDto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+
             return Ok(userDto);
         }
 
@@ -226,22 +307,19 @@ namespace DockerSample.Api.Controllers
         //    }
         //}
 
-        ///// <summary>
-        ///// Deletes the account of the logged-in user.
-        ///// </summary>
-        ///// <returns></returns>
-        ///// <response code="200">If the user account was successfully deleted</response>
-        //[HttpDelete]
-        //[ProducesResponseType(200)]
-        //public IActionResult Delete()
-        //{
-        //    // Find id of currently logged-in user
-        //    var id = Guid.Parse(ControllerContext.HttpContext.User.Identity.Name);
-
-        //    //Delete user
-        //    _userService.Delete(id);
-        //    return Ok();
-        //}
+        /// <summary>
+        /// Deletes the account of the logged-in user.
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">If the user account was successfully deleted</response>
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Delete()
+        {
+            var user = await _userManager.FindByIdAsync(ControllerContext.HttpContext.User.Identity.Name);
+            await _userManager.DeleteAsync(user);
+            return Ok();
+        }
 
         #endregion
     }

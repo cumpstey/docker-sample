@@ -22,6 +22,9 @@ namespace DockerSample.Api.Dtos
         /// </summary>
         public string Email { get; set; }
 
+        /// <summary>
+        /// Roles to which this user is assigned
+        /// </summary>
         public string[] Roles { get; set; }
     }
 }

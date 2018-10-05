@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DockerSample.Api.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,55 +17,27 @@ namespace DockerSample.Api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "This endpoint is publicly accessible" };
         }
 
         /// <summary>
         /// Gets all values
         /// </summary>
-        [HttpGet("getadmin")]
-        [Authorize(Roles = "Administrator")]
+        [HttpGet("any-user")]
+        [Authorize]
+        public ActionResult<IEnumerable<string>> GetAnyUser()
+        {
+            return new string[] { "This endpoint is accessible to all authenticated users" };
+        }
+
+        /// <summary>
+        /// Gets all values
+        /// </summary>
+        [HttpGet("admin-only")]
+        [Authorize(Roles = Roles.Administrator)]
         public ActionResult<IEnumerable<string>> GetAdmin()
         {
-            return new string[] { "value3", "value4" };
-        }
-
-        /// <summary>
-        /// Gets an individual value by id
-        /// </summary>
-        /// <param name="id">Id</param>
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
-
-        /// <summary>
-        /// Creates a new value item
-        /// </summary>
-        /// <param name="value">Value</param>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        /// <summary>
-        /// Updates an existing value item
-        /// </summary>
-        /// <param name="id">Id</param>
-        /// <param name="value">Value</param>
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        /// <summary>
-        /// Deletes a value item
-        /// </summary>
-        /// <param name="id">Id</param>
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return new string[] { "This endpoint is accessible only to users in the Administrator role" };
         }
     }
 }

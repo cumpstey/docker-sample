@@ -1,7 +1,5 @@
 ﻿using DockerSample.Api.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading.Tasks;
 
 namespace DockerSample.Api.Helpers
@@ -15,6 +13,8 @@ namespace DockerSample.Api.Helpers
 
         private UserManager<ApplicationUser> _userManager;
 
+        private RoleManager<IdentityRole> _roleManager;
+
         #endregion
 
         #region Constructor
@@ -22,9 +22,11 @@ namespace DockerSample.Api.Helpers
         /// <summary>
         /// Initialises a new instance of the <see cref="DatabaseSeeder"/> class.
         /// </summary>
-        /// <param name="hasher">Password hasher</param>
-        public DatabaseSeeder(UserManager<ApplicationUser> userManager)
+        /// <param name="roleManager">Role manager</param>
+        /// <param name="userManager">User manager</param>
+        public DatabaseSeeder(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
         }
 
@@ -33,67 +35,50 @@ namespace DockerSample.Api.Helpers
         #region Methods
 
         /// <summary>
-        /// Insert sample users into the database.
+        /// Seeds the database with the roles used by the application.
         /// </summary>
-        /// <param name="modelBuilder">Database model builder</param>
-        public async Task SeedUsersAsync(ModelBuilder modelBuilder)
+        public async Task SeedRolesAsync()
         {
-            var user1 = new ApplicationUser
+            // In Startup iam creating first Admin Role and creating a default Admin User    
+            if (!await _roleManager.RoleExistsAsync(Roles.Administrator))
             {
-                //Id = "efb032d2-6f61-4ee8-b6a3-94fffe625be5",
+                // first we create Admin rool   
+                var role = new IdentityRole(Roles.Administrator);
+                var result = await _roleManager.CreateAsync(role);
+
+            }
+        }
+
+        /// <summary>
+        /// Seeds the database with some dummy users in the various roles.
+        /// </summary>
+        public async Task SeedUsersAsync()
+        {
+            // Create admin user
+            var admin = new ApplicationUser
+            {
+                UserName = "admin@example.com",
                 Email = "admin@example.com",
+                FirstName = "Bob",
+                LastName = "Jones",
+                EmailConfirmed = true,
+            };
+            var adminResult = await _userManager.CreateAsync(admin, "Password[1]");
+            if (adminResult.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(admin, Roles.Administrator);
+            }
+
+            // Create standard user
+            var user = new ApplicationUser
+            {
+                UserName = "user@example.com",
+                Email = "user@example.com",
                 FirstName = "John",
                 LastName = "Smith",
-                //PasswordHash = hash,
-                //PasswordSalt = salt,
-                //Roles = new[] { adminRole },
+                EmailConfirmed = true,
             };
-            await _userManager.CreateAsync(user1);
-            await _userManager.AddPasswordAsync(user1, "thisisapassword");
-            await _userManager.AddToRoleAsync(user1, "Admin");
-
-            var user2 = new ApplicationUser
-            {
-                //Id = "efb032d2-6f61-4ee8-b6a3-94fffe625be5",
-                Email = "user@example.com",
-                FirstName = "Jim",
-                LastName = "Smith",
-                //PasswordHash = hash,
-                //PasswordSalt = salt,
-                //Roles = new[] { adminRole },
-            };
-            await _userManager.CreateAsync(user2);
-            await _userManager.AddPasswordAsync(user2, "thisisapassword");
-            //await _userManager.AddToRoleAsync(user1, "Admin");
-
-            //var adminRole = new UserRole { Name = "Admin" };
-            //var userRole = new UserRole { Name = "User" };
-            //modelBuilder.Entity<UserRole>().HasData(adminRole);
-            //modelBuilder.Entity<UserRole>().HasData(userRole);
-
-            //_hasher.CreatePasswordHash("thisisapassword", out byte[] hash, out byte[] salt);
-
-            //modelBuilder.Entity<User>().HasData(new User
-            //{
-            //    Id = "efb032d2-6f61-4ee8-b6a3-94fffe625be5",
-            //    Email = "admin@example.com",
-            //    FirstName = "John",
-            //    LastName = "Smith",
-            //    PasswordHash = hash,
-            //    PasswordSalt = salt,
-            //    //Roles = new[] { adminRole },
-            //});
-
-            //modelBuilder.Entity<User>().HasData(new User
-            //{
-            //    Id = "46253d9f-4c50-493a-9bb5-9fce27f1adb4",
-            //    Email = "user@example.com",
-            //    FirstName = "Jim",
-            //    LastName = "Smith",
-            //    PasswordHash = hash,
-            //    PasswordSalt = salt,
-            //    //Roles = new[] { userRole },
-            //});
+            var userResult = await _userManager.CreateAsync(user, "Password[1]");
         }
 
         #endregion

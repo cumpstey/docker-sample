@@ -1,9 +1,9 @@
-﻿namespace DockerSample.Api.Helpers
+﻿namespace DockerSample.Api.Settings
 {
     /// <summary>
     /// Class holding application settings defined in the configuration files.
     /// </summary>
-    public class AppSettings
+    public class ApplicationSettings
     {
         /// <summary>
         /// Secret key for the JWT authentication system.

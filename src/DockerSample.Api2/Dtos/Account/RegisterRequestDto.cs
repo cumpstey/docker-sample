@@ -3,7 +3,7 @@
 namespace DockerSample.Api.Dtos.Account
 {
     /// <summary>
-    /// Class representing the credentials passed in an authentication request.
+    /// Class representing the parameters passed in a registration request.
     /// </summary>
     public class RegisterRequestDto
     {
@@ -30,12 +30,6 @@ namespace DockerSample.Api.Dtos.Account
         /// Password
         /// </summary>
         [Required]
-        [MinLength(10)]
         public string Password { get; set; }
-
-        /// <summary>
-        /// Register to the Administrator role
-        /// </summary>
-        public bool IsAdmin { get; set; }
     }
 }

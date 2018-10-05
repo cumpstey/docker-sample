@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DockerSample.Api2": {
+    "DockerSample.Api": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

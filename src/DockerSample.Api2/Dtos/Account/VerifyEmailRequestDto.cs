@@ -3,20 +3,20 @@
 namespace DockerSample.Api.Dtos.Account
 {
     /// <summary>
-    /// Class representing the parameters passed in an authentication request.
+    /// Class representing the parameters passed in an email verification request.
     /// </summary>
-    public class AuthenticateRequestDto
+    public class VerifyEmailRequestDto
     {
         /// <summary>
-        /// Email address
+        /// UserId
         /// </summary>
         [Required]
-        public string Email { get; set; }
+        public string UserId { get; set; }
 
         /// <summary>
-        /// Password
+        /// Email verification token
         /// </summary>
         [Required]
-        public string Password { get; set; }
+        public string Token { get; set; }
     }
 }

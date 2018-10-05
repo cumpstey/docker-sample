@@ -3,7 +3,7 @@
 namespace DockerSample.Api.Dtos.Account
 {
     /// <summary>
-    /// Class representing the credentials passed in an authentication request.
+    /// Class representing the parameters passed in an account update request.
     /// </summary>
     public class UpdateRequestDto
     {

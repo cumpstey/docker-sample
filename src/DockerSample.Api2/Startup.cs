@@ -21,6 +21,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using DockerSample.Api.Entities;
+using DockerSample.Api.Settings;
+using DockerSample.Api.Services;
+using DockerSample.Api.Middleware;
 
 namespace DockerSample.Api
 {
@@ -49,24 +52,34 @@ namespace DockerSample.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+
             services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
+
+                // Require only a minimum length of 10 characters for the password - no other rules.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 10;
             })
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             services.AddAutoMapper();
 
             // Configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
+            var appSettingsSection = Configuration.GetSection("Application");
+            services.Configure<ApplicationSettings>(appSettingsSection);
+            services.Configure<EmailSettings>(Configuration.GetSection("Email"));
 
             // Configure JWT authentication
-            var appSettings = appSettingsSection.Get<AppSettings>();
+            var appSettings = appSettingsSection.Get<ApplicationSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
             {
@@ -103,10 +116,8 @@ namespace DockerSample.Api
             });
 
             // Configure dependency resolver for application services
-            services.AddSingleton<DatabaseSeeder, DatabaseSeeder>();
-            //services.AddScoped<UserManager<User>, UserManager<User>>();
-            //services.AddScoped<SignInManager<User>, SignInManager<User>>();
-
+            services.AddScoped<DatabaseSeeder, DatabaseSeeder>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             // Register the Swagger generator
             services.AddSwaggerGen(c =>
@@ -115,7 +126,7 @@ namespace DockerSample.Api
                 {
                     Title = "An API",
                     Version = "v1",
-                    Description = "An sample API using JWT authentication",
+                    Description = "A sample API using JWT authentication",
                     Contact = new Contact
                     {
                         Name = "Neil Cumpstey",
@@ -139,7 +150,6 @@ namespace DockerSample.Api
                 {
                     { "Bearer", new string[] { } }
                 });
-                //c.DocumentFilter<SecurityRequirementsDocumentFilter>();
             });
         }
 
@@ -150,15 +160,17 @@ namespace DockerSample.Api
             IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            DatabaseSeeder databaseSeeder
         )
         {
             if (env.IsDevelopment())
             {
-                Task.Run(() => SeedRoles(roleManager)).Wait();
-                Task.Run(() => SeedUsers(userManager)).Wait();
-                app.UseDeveloperExceptionPage();
+                // Seed database
+                //var databaseSeeder = app.ApplicationServices.GetRequiredService<DatabaseSeeder>();
+                Task.Run(() => databaseSeeder.SeedRolesAsync()).Wait();
+                Task.Run(() => databaseSeeder.SeedUsersAsync()).Wait();
+
+                app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             }
             else
             {
@@ -189,47 +201,6 @@ namespace DockerSample.Api
             });
 
             app.UseMvc();
-        }
-
-        private async Task SeedRoles(RoleManager<IdentityRole> roleManager)
-        {
-            // In Startup iam creating first Admin Role and creating a default Admin User    
-            if (!await roleManager.RoleExistsAsync("Administrator"))
-            {
-                // first we create Admin rool   
-                var role = new IdentityRole("Administrator");
-                var result = await roleManager.CreateAsync(role);
-
-            }
-        }
-
-        private async Task SeedUsers(UserManager<ApplicationUser> userManager)
-        {
-            userManager.PasswordValidators.Clear();
-            userManager.UserValidators.Clear();
-
-            //Here we create a Admin super user who will maintain the website                  
-            var admin = new ApplicationUser
-            {
-                UserName = "admin@example.com",
-                Email = "admin@example.com",
-                FirstName = "Bob",
-                LastName = "Jones",
-            };
-            var adminResult = await userManager.CreateAsync(admin, "Password[1]");
-            if (adminResult.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, "Administrator");
-            }
-
-            var user = new ApplicationUser
-            {
-                UserName = "user@example.com",
-                Email = "user@example.com",
-                FirstName = "John",
-                LastName = "Smith",
-            };
-            var userResult = await userManager.CreateAsync(user, "Password[1]");
         }
     }
 }

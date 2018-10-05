@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DockerSample.Api.ActionResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DockerSample.Api.Controllers
 {
@@ -14,6 +15,15 @@ namespace DockerSample.Api.Controllers
         /// Root url for the api based on this controller
         /// </summary>
         public const string ApiRoot = "api/v1/";
+
+        #endregion
+
+        #region
+
+        protected UnauthorizedResult Unauthorized(object data)
+        {
+            return new UnauthorizedWithDataResult(data);
+        }
 
         #endregion
     }
