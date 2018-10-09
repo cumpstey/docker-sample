@@ -15,6 +15,7 @@ using DockerSample.Api.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -37,7 +38,7 @@ namespace DockerSample.Api.Controllers
 
         private readonly IMapper _mapper;
 
-        private readonly ApplicationSettings _appSettings;
+        private readonly ApplicationSettings _applicationSettings;
 
         #endregion
 
@@ -50,20 +51,20 @@ namespace DockerSample.Api.Controllers
         /// <param name="signInManager">Sign in manager</param>
         /// <param name="emailSender">Email sender</param>
         /// <param name="mapper">Mapper</param>
-        /// <param name="appSettings">Settings</param>
+        /// <param name="applicationSettings">Settings</param>
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             IMapper mapper,
-            IOptions<ApplicationSettings> appSettings
+            IOptions<ApplicationSettings> applicationSettings
         )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _mapper = mapper;
-            _appSettings = appSettings.Value;
+            _applicationSettings = applicationSettings.Value;
         }
 
         #endregion
@@ -88,14 +89,14 @@ namespace DockerSample.Api.Controllers
             if (!result.Succeeded)
             {
                 // TODO: Different messaging if user is locked out rather than just not exists.
-                return Unauthorized(new { Errors = new[] { new IdentityError { Code = "UserNotFound", Description = "User not found" } } });
+                return Unauthorized(new ErrorDto(ErrorDto.UserNotFound, "User not found matching the provided credentials"));
             }
 
             // Retrieve authenticated user
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (!user.EmailConfirmed)
             {
-                return Unauthorized(new { Errors = new[] { new IdentityError { Code = "EmailNotVerified", Description = "Please verify your email address by clicking the link in the email you have been sent" } } });
+                return Unauthorized(new ErrorDto(ErrorDto.EmailNotVerified, "Please verify your email address by clicking the link in the email you have been sent."));
             }
 
             // Retrieve roles to which the user is assigned
@@ -103,7 +104,7 @@ namespace DockerSample.Api.Controllers
 
             // Generate JWT token to return in the response
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_applicationSettings.Secret);
 
             var claims = new List<Claim>() { new Claim(ClaimTypes.Name, user.Id.ToString()) };
             claims.AddRange(roles.Select(i => new Claim(ClaimTypes.Role, i)));
@@ -121,13 +122,6 @@ namespace DockerSample.Api.Controllers
             return Ok(new AuthenticateResponseDto
             {
                 Token = tokenString,
-                //User = new UserDto
-                //{
-                //    Email = user.Email,
-                //    FirstName = user.FirstName,
-                //    LastName = user.LastName,
-                //    Roles = roles.ToArray(),
-                //},
             });
         }
 
@@ -142,11 +136,12 @@ namespace DockerSample.Api.Controllers
         [HttpPost("register-without-email-verification")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
+        [Obsolete]
         public async Task<IActionResult> RegisterWithoutEmailVerification([FromBody]RegisterRequestDto request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             // Map dto to entity
@@ -163,8 +158,9 @@ namespace DockerSample.Api.Controllers
             }
             else
             {
-                // TODO: Return error messaging
-                return BadRequest();
+                var errorDto = new ErrorDto();
+                errorDto.AddIdentityErrors(result.Errors);
+                return BadRequest(errorDto);
             }
         }
 
@@ -183,7 +179,7 @@ namespace DockerSample.Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             // Map dto to entity
@@ -195,18 +191,24 @@ namespace DockerSample.Api.Controllers
             {
                 // Send email with verification link
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = Url.GetEmailVerificationLink(user.Id, token);
+                var callbackUrl = Url.GetEmailVerificationLink(_applicationSettings.FrontEndUri, user.Id, token);
                 await _emailSender.SendEmailConfirmationAsync(request.Email, callbackUrl);
 
                 // Return details of created user
                 var userDto = _mapper.Map<UserDto>(user);
                 userDto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
 
-                return Created($"/{ApiRoot}account", userDto);
+                return Created($"/{ApiRoot}account", new SuccessDto<UserDto>
+                {
+                    Message = "Please verify your email address by clicking the link in the email you have been sent.",
+                    Data = userDto
+                });
             }
             else
             {
-                return BadRequest(new { result.Errors });
+                var errorDto = new ErrorDto();
+                errorDto.AddIdentityErrors(result.Errors);
+                return BadRequest(errorDto);
             }
         }
 
@@ -225,27 +227,25 @@ namespace DockerSample.Api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
-                return BadRequest(new
-                {
-                    Errors = new[] { new IdentityError { Code = "UserNotFound", Description = "User not found" } }
-                });
+                return BadRequest(new ErrorDto(ErrorDto.UserNotFound, "User not found"));
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, request.Token);
             if (result.Succeeded)
             {
-                // TODO: Is 200 the right response code here? Probably.
                 return Ok();
             }
             else
             {
-                return BadRequest(new { result.Errors });
+                var errorDto = new ErrorDto();
+                errorDto.AddIdentityErrors(result.Errors);
+                return BadRequest(errorDto);
             }
         }
 
@@ -263,10 +263,7 @@ namespace DockerSample.Api.Controllers
             var user = await _userManager.FindByIdAsync(ControllerContext.HttpContext.User.Identity.Name);
             if (user == null)
             {
-                return BadRequest(new
-                {
-                    Errors = new[] { new IdentityError { Code = "UserNotFound", Description = "User not found" } }
-                });
+                return BadRequest(new ErrorDto(ErrorDto.UserNotFound, "User not found"));
             }
 
             var userDto = _mapper.Map<UserDto>(user);

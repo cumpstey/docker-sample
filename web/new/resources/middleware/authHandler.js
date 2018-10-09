@@ -38,11 +38,15 @@ export default store => next => (action) => {
 
     // If user is not logged in and we're not on a page available when logged out, redirect to the login page.
     if (!isLoggedIn && !isAvailableAnonymously(pathname)) {
+console.log('replace: login')
+console.log(replace(config.routes.login));
       return store.dispatch(replace(config.routes.login));
     }
     
     // If user is logged in, but we're on the login page, redirect to the dashboard.
     if (isLoggedIn && pathToRegexp(config.routes.login, []).exec(pathname)) {
+console.log('replace: dashboard')
+      console.log(replace(config.routes.dashboard));
       return store.dispatch(replace(config.routes.dashboard));
     }
   }

@@ -1,0 +1,27 @@
+.form-message {
+  padding: 18px 24px;
+  background-color: #F8FAFC;
+  border: 1px solid #DFE3E9;
+  border-radius: 4px;
+  margin-bottom: 30px;
+}
+
+.form-message p {
+  margin-bottom: 1em;
+  color: #354052;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.form-message p:last-child {
+  margin-bottom: 0em;
+}
+
+.form-message--error {
+  background-color: rgba(237, 28, 36, 0.1);
+  border: 1px solid rgba(237, 28, 36, 0.25);
+}
+
+.form-message--error p {
+  color: #ed1c24;
+}

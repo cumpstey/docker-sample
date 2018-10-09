@@ -84,34 +84,34 @@ export const loadPage = () => (dispatch) => {
   dispatch({ type: 'LOAD_PAGE' });
 };
 
-// Values
+// // // Values
 
-export const fetchValuesDataStart = () => ({
-  type: 'FETCH_VALUES_DATA_START',
-});
+// // export const fetchValuesDataStart = () => ({
+// //   type: 'FETCH_VALUES_DATA_START',
+// // });
 
-export const fetchValuesDataEnd = () => ({
-  type: 'FETCH_VALUES_DATA_END',
-});
+// // export const fetchValuesDataEnd = () => ({
+// //   type: 'FETCH_VALUES_DATA_END',
+// // });
 
-export const setValuesData = (data, message) => ({
-  type: 'SET_VALUES_DATA',
-  data,
-  message,
-});
+// // export const setValuesData = (data, message) => ({
+// //   type: 'SET_VALUES_DATA',
+// //   data,
+// //   message,
+// // });
 
-export const fetchValuesData = (params) => (dispatch) => {
-  const requestsFinished = api.getValues(params)
-    .then((response) => {
-      dispatch(setValuesData(mapRawValuesData(response.data.data), response.data.message));
-      dispatch(setPaginationData(mapRawPaginationData(response.data.meta.pagination)));
-    })
-    .catch(error => dispatch(handleError(error)));
+// // export const fetchValuesData = (params) => (dispatch) => {
+// //   const requestsFinished = api.getValues(params)
+// //     .then((response) => {
+// //       dispatch(setValuesData(mapRawValuesData(response.data.data), response.data.message));
+// //       dispatch(setPaginationData(mapRawPaginationData(response.data.meta.pagination)));
+// //     })
+// //     .catch(error => dispatch(handleError(error)));
 
-  dispatch(fetchValuesDataStart());
+// //   dispatch(fetchValuesDataStart());
 
-  requestsFinished.then(() => dispatch(fetchValuesDataEnd()));
-};
+// //   requestsFinished.then(() => dispatch(fetchValuesDataEnd()));
+// // };
 
 // Forms
 
@@ -195,8 +195,10 @@ export const submitLoginForm = () => (dispatch, getState) => {
   const requestFinished = api.submitLogin(data)
     .then((response) => {
       dispatch(setAuthenticationToken(response.data.token));
-
+      console.log('pushing');
+      console.log(push(config.routes.dashboard));
       dispatch(push(config.routes.dashboard));
+      console.log('pushed');
     })
     .catch(error => dispatch(handleError(error, formId)));
 

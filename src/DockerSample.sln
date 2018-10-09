@@ -11,7 +11,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerSample.Api2", "DockerSample.Api2\DockerSample.Api2.csproj", "{25C36BE6-D56D-464D-8E16-6AC629537E26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerSample.Api2", "DockerSample.Api2\DockerSample.Api2.csproj", "{25C36BE6-D56D-464D-8E16-6AC629537E26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{0B17F0F2-E3EE-404C-89D6-303377DB280E}"
+	ProjectSection(SolutionItems) = preProject
+		Database\Dockerfile = Database\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{3AFDB1A6-AD6E-4470-9884-1736A7266255}"
+	ProjectSection(SolutionItems) = preProject
+		Database\sql\000_CreateDatabase.sql = Database\sql\000_CreateDatabase.sql
+		Database\sql\20181007085411_InitialiseDatabase.sql = Database\sql\20181007085411_InitialiseDatabase.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +41,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3AFDB1A6-AD6E-4470-9884-1736A7266255} = {0B17F0F2-E3EE-404C-89D6-303377DB280E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4085F07D-9931-4A88-B331-ACDAEE6FA09A}

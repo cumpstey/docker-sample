@@ -1,16 +1,29 @@
 version: "3"
 services:
-  api:
+  #api:
+  #  build:
+  #      context: "./DockerSample.Api/"
+  #  container_name: api
+  #  #env_file: ".env"
+  #  ports:
+  #  - "5001:80"
+#  api2:
+#    build:
+#      context: "./DockerSample.Api2/"
+#    ports:
+#      - "5002:80"
+#      - "5022:443"
+  database:
+    #image: "mcr.microsoft.com/mssql/server:2017-latest"
     build:
-        context: "./DockerSample.Api/"
-    container_name: api
-    #env_file: ".env"
+      context: "./Database"
+    #container_name: database
+    #volumes:
+    #    - "dbdata-dev:/var/lib/mysql"
+    #    - "./docker/mysql-init-scripts:/docker-entrypoint-initdb.d"
     ports:
-    - "5001:80"
-  api2:
-    build:
-        context: "./DockerSample.Api2/"
-    container_name: api2
-    #env_file: ".env"
-    ports:
-    - "5002:80"
+      - "5050:1433"
+#    environment:
+#      ACCEPT_EULA: "Y"
+#      SA_PASSWORD: "Password[1]"
+#      MSSQL_PID: "Developer"

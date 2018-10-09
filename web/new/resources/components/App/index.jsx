@@ -19,7 +19,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   handleEscapeKey: actions.handleEscapeKey,
-  logoutUser: actions.unsetUser,
+  logoutUser: actions.unsetCurrentUser,
   push,
 }, dispatch);
 

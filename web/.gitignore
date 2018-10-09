@@ -1,1 +1,8 @@
-original/
+node_modules/
+.vscode/
+
+/basic/
+/original/
+/new/
+
+.env

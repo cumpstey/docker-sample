@@ -15,7 +15,7 @@ export default store => next => (action) => {
     } else if (action.error.response && action.error.response.status === 429) {
       store.dispatch(actions.formUpdateServerError(action.formId, action.error.response.data.error));
     } else if (action.error.response && action.error.response.status === 401) {
-      store.dispatch(actions.unsetUser());
+      store.dispatch(actions.unsetCurrentUser());
       return store.dispatch(replace(config.routes.login));
     } else {
       throw action.error;

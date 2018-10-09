@@ -1,0 +1,53 @@
+{
+  "name": "front-end",
+  "version": "1.0.0",
+  "description": "Front end",
+  "main": "server.js",
+  "author": "Neil Cumpstey",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "classnames": "^2.2.6",
+    "connected-react-router": "^4.5.0",
+    "dotenv": "^6.0.0",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "history": "^4.7.2",
+    "prop-types": "^15.6.2",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "copy-webpack-plugin": "^4.5.2",
+    "css-loader": "^1.0.0",
+    "file-loader": "^2.0.0",
+    "nodemon": "^1.18.4",
+    "postcss-loader": "^3.0.0",
+    "style-loader": "^0.23.0",
+    "svg-react-loader": "^0.4.5",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "server": "NODE_ENV=development nodemon --watch server.js",
+    "server-win": "SET NODE_ENV=development&&nodemon --watch server.js",
+    "watch": "NODE_ENV=development webpack --progress -w --watch-poll",
+    "watch-win": "SET NODE_ENV=development&&webpack --progress -w --watch-poll --mode development",
+    "build": "webpack",
+    "build:prod": "webpack -p --config webpack.production.config.js"
+  }
+}

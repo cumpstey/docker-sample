@@ -1,0 +1,20 @@
+.options-bar {
+  height: 70px;
+  padding: 0 30px;
+  border-bottom: 1px solid #CED0DA;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  color: #68768C;
+  font-weight: 600;
+  align-items: center;
+}
+
+.options-bar-section {
+  display: flex;
+  align-items: center;
+}
+
+.options-bar-section--right {
+  margin-left: auto;
+}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>My application</title>
+    <script>
+      window.app = {
+        apiUrl: '<%- apiUrl %>'
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/vendor.js?v=<%- deployVersion %>"></script>
+    <script src="/app.js?v=<%- deployVersion %>"></script>
+  </body>
+</html>

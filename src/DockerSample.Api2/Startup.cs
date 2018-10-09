@@ -24,6 +24,8 @@ using DockerSample.Api.Entities;
 using DockerSample.Api.Settings;
 using DockerSample.Api.Services;
 using DockerSample.Api.Middleware;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace DockerSample.Api
 {
@@ -51,9 +53,13 @@ namespace DockerSample.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
+            var appSettingsSection = Configuration.GetSection("Application");
+            var appSettings = appSettingsSection.Get<ApplicationSettings>();
+
             services.AddCors();
 
-            services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
+            //services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
+            services.AddDbContext<DataContext>(x => x.UseSqlServer(appSettings.ConnectionString));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -74,12 +80,10 @@ namespace DockerSample.Api
             services.AddAutoMapper();
 
             // Configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("Application");
             services.Configure<ApplicationSettings>(appSettingsSection);
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
 
             // Configure JWT authentication
-            var appSettings = appSettingsSection.Get<ApplicationSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
             {
@@ -163,10 +167,11 @@ namespace DockerSample.Api
             DatabaseSeeder databaseSeeder
         )
         {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+
             if (env.IsDevelopment())
             {
                 // Seed database
-                //var databaseSeeder = app.ApplicationServices.GetRequiredService<DatabaseSeeder>();
                 Task.Run(() => databaseSeeder.SeedRolesAsync()).Wait();
                 Task.Run(() => databaseSeeder.SeedUsersAsync()).Wait();
 

@@ -1,0 +1,89 @@
+.text-field {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.text-field-inner {
+  position: relative;
+}
+
+.text-field svg {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  top: 9px;
+  right: 11px;
+}
+
+.text-field-input {
+  height: 36px;
+  -webkit-appearance: none;
+}
+
+.text-field-textarea {
+  resize: vertical;
+  min-height: 110px;
+  max-height: 220px;
+  height: 100%;
+  line-height: 1.35em;
+  -webkit-appearance: none;
+}
+
+.text-field-textarea,
+.text-field-input {
+  width: 100%;
+  display: block;
+  outline: none;
+  padding: 8px 14px;
+  font-size: inherit;
+  font-weight: 600;
+  color: #354052;
+  font-family: inherit;
+  border: 1px solid #dfe3e9;
+  border-radius: 4px;
+  transition: border-color 100ms;
+  background-color: white;
+}
+
+.text-field-textarea:focus,
+.text-field-input:focus {
+  border-color: #8d98a9;
+}
+
+.text-field-textarea::placeholder,
+.text-field-input::placeholder {
+  color: rgba(104, 118, 140, 0.5);
+}
+
+.text-field-textarea:disabled,
+.text-field-input:disabled {
+  background-color: #dfe3e9;
+  color: rgba(104, 118, 140, 0.5);
+}
+
+.text-field-label {
+  color: #7f8fa4;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.text-field-error-list {
+  margin-top: 0.5em;
+  color: #ed1c24;
+  font-size: 0.9em;
+}
+
+.text-field-error-list li {
+  margin-bottom: 0.3em;
+}
+
+.text-field--error {
+  fill: #ed1c24;
+}
+
+.text-field--error .text-field-input,
+.text-field--error .text-field-textarea {
+  border-color: #ed1c24;
+  fill: #ed1c24;
+}

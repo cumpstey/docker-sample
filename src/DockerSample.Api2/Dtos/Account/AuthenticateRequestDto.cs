@@ -11,6 +11,7 @@ namespace DockerSample.Api.Dtos.Account
         /// Email address
         /// </summary>
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         /// <summary>
