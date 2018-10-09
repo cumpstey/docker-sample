@@ -1,4 +1,4 @@
-import bg from '../assets/images/bg.jpg';
+import backgroundImage from '../assets/images/main.jpg';
 import { icon } from '../constants';
 import { FORM_ID as LOGIN_FORM_ID, default as loginForm } from './forms/login';
 import { FORM_ID as REGISTER_FORM_ID, default as registerForm } from './forms/register';
@@ -28,7 +28,7 @@ export const forms = {
 export default {
   routes,
   rootUrl,
-  backgroundImageUrl: bg,
+  backgroundImageUrl: backgroundImage,
   forms,
   menus: {
     settings: {
