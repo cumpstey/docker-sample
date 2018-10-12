@@ -1,9 +1,9 @@
 ﻿namespace DockerSample.Api.Dtos.Account
 {
     /// <summary>
-    /// Class representing the credentials passed in an authentication request.
+    /// Class representing the information returned from a successful authentication request.
     /// </summary>
-    public class AuthenticateResponseDto
+    public class AuthenticatedResponseDto
     {
         /// <summary>
         /// JWT authentication token
@@ -11,8 +11,8 @@
         public string Token { get; set; }
 
         /// <summary>
-        /// User details
+        /// Prompt the user to register for two factor authentication
         /// </summary>
-        public UserDto User { get; set; }
+        public bool PromptToRegister2FA { get; set; }
     }
 }

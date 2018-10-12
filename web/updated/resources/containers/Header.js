@@ -6,7 +6,7 @@ import * as uiActions from '../actions/ui';
 const mapStateToProps = state => ({
   dropdownMenuId: state.ui.dropdownMenuId,
   isMobileNavVisible: state.ui.isMobileNavVisible,
-  userIsLoaded: state.currentUser.isLoaded,
+  userIsLoaded: state.currentUser.userIsLoaded,
   user: state.currentUser.user,
 });
 

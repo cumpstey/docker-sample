@@ -8,9 +8,9 @@ import { push } from 'connected-react-router';
 import classnames from 'classnames';
 import * as appActions from '../../actions/app';
 import * as uiActions from '../../actions/ui';
-import * as currentUserActions from '../../actions/currentUser';
+import * as currentUserActions from '../../actions/currentUser/user';
 import { keyboard } from '../../constants';
-// import Modal from '../Modals/Modal';
+import Modal from '../modals/Modal';
 import config from '../../configuration';
 import './style.css';
 import './animations.css';
@@ -84,7 +84,7 @@ class App extends Component {
     this.timeouts = this.timeouts || {};
 
     if (!this.timeouts[id]) {
-      this.timeouts[id] = setTimeout(() => {console.log(id); this.props.hideMessage(id);}, 10000);
+      this.timeouts[id] = setTimeout(() => this.props.hideMessage(id), 10000);
     }
   }
 
@@ -103,9 +103,9 @@ class App extends Component {
 
     return (
       <div className={cssClasses}>
-        <Callout text={messages} type="success" />
+        <Callout messages={messages} />
         {children}
-        {/* <Modal id={modalId} /> */}
+        <Modal id={modalId} />
       </div>
     );
   }

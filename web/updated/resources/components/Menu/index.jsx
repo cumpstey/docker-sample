@@ -5,6 +5,7 @@ import Link from '../Link';
 import MenuItem from './MenuItem';
 import './style.css';
 
+// TODO: this is a bit rubbish
 const Menu = ({ data, isDropdown, selectedMenuItemId, handleMenuItemClick }) => {
   const cssClasses = classnames('menu', {
     'menu--dropdown': isDropdown,

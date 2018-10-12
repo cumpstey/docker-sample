@@ -2,9 +2,9 @@ import * as types from '../types/app';
 
 // General message
 
-export const showMessage = (message) => ({
+export const showMessage = (text, type) => ({
   type: types.MESSAGE_SHOW,
-  payload: { message },
+  payload: { text, type },
 });
 
 export const hideMessage = (id) => ({

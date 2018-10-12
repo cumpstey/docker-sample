@@ -11,5 +11,9 @@ export const mapRawUserData = user => ({
   email: user.email,
 });
 
-export const mapRawRolesData = user => user.roles; // TODO: ensure strings
+export const mapRawRolesData = user => Array.isArray(user.roles) ? user.roles.map(i => `${i}`) : [];
 
+export const mapRawTwoFactorAuthData = data => ({
+  enabled: data.is2faEnabled,
+  recoveryCodesRemaining: data.recoveryCodesLeft,
+});

@@ -1,19 +1,28 @@
 import backgroundImage from '../assets/images/main.jpg';
 import { icon } from '../constants';
+import { FORM_ID as ENABLETWOFACTORAUTH_FORM_ID, default as enableTwoFactorAuthForm } from './forms/enableTwoFactorAuth';
 import { FORM_ID as LOGIN_FORM_ID, default as loginForm } from './forms/login';
+import { FORM_ID as LOGINTWOFACTOR_FORM_ID, default as loginTwoFactorForm } from './forms/loginTwoFactor';
 import { FORM_ID as REGISTER_FORM_ID, default as registerForm } from './forms/register';
+import { FORM_ID as VERIFYEMAIL_FORM_ID, default as verifyEmailForm } from './forms/verifyEmail';
 
 export const rootUrl = process.browser ? window.app.apiUrl : '';
 
 export const routes = {
   dashboard: '/',
+  
   login: '/login',
+  forgotPassword: '/forgot-password',
+
   register: '/register',
-  verifyEmail: '/verify-email/:token',
+  verifyEmail: '/verify-email/:userId/:token',
+
+  account: '/account',
+  twoFaSetup: '/account/two-factor-setup',
+
   // logout: '/logout',
   // error: '/error',
   // resetPassword: '/password/reset/:token',
-  forgotPassword: '/forgot-password',
   // createPassword: '/sign-up/:token',
   // accountSettings: '/account/settings',
   // accountSystem: '/account/system',
@@ -21,28 +30,31 @@ export const routes = {
 };
 
 export const forms = {
+  [ENABLETWOFACTORAUTH_FORM_ID]: enableTwoFactorAuthForm,
   [LOGIN_FORM_ID]: loginForm,
+  [LOGINTWOFACTOR_FORM_ID]: loginTwoFactorForm,
   [REGISTER_FORM_ID]: registerForm,
+  [VERIFYEMAIL_FORM_ID]: verifyEmailForm,
 }
 
 export default {
   routes,
   rootUrl,
-  backgroundImageUrl: backgroundImage,
+  backgroundImageUrl: `/${backgroundImage}`,
   forms,
-  menus: {
+  menus: { // TODO: this shouldn't be configured here!
     settings: {
       id: 'settings',
       icon: icon.person,
       name: 'Account settings',
-      path: routes.accountSettings,
+      path: routes.account,
       description: 'Change your account details and password',
     },
     logout: {
       id: 'logout',
       icon: icon.logout,
       name: 'Log out',
-      path: routes.logout,
+      // path: routes.logout,
       description: 'Log out of this account',
     },
   },

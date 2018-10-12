@@ -53,13 +53,19 @@ namespace DockerSample.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            var appSettingsSection = Configuration.GetSection("Application");
-            var appSettings = appSettingsSection.Get<ApplicationSettings>();
+            var applicationSettingsSection = Configuration.GetSection("Application");
+            var applicationSettings = applicationSettingsSection.Get<ApplicationSettings>();
 
             services.AddCors();
 
-            //services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(appSettings.ConnectionString));
+            if (string.IsNullOrEmpty(applicationSettings.ConnectionString))
+            {
+                services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
+            }
+            else
+            {
+                services.AddDbContext<DataContext>(x => x.UseSqlServer(applicationSettings.ConnectionString));
+            }
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -80,11 +86,11 @@ namespace DockerSample.Api
             services.AddAutoMapper();
 
             // Configure strongly typed settings objects
-            services.Configure<ApplicationSettings>(appSettingsSection);
+            services.Configure<ApplicationSettings>(applicationSettingsSection);
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
 
             // Configure JWT authentication
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(applicationSettings.JwtSecret);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -121,6 +127,7 @@ namespace DockerSample.Api
 
             // Configure dependency resolver for application services
             services.AddScoped<DatabaseSeeder, DatabaseSeeder>();
+            services.AddScoped<JwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IEmailSender, EmailSender>();
 
             // Register the Swagger generator

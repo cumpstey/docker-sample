@@ -1,7 +1,12 @@
+import { FORM_ID as ENABLE_TWO_FACTOR_AUTH_FORM_ID } from '../configuration/forms/enableTwoFactorAuth';
 import { FORM_ID as LOGIN_FORM_ID } from '../configuration/forms/login';
 import { FORM_ID as REGISTER_FORM_ID } from '../configuration/forms/register';
 
 export const getUserFullName = state => `${state.user.firstName} ${state.user.lastName}`;
+
+export const canSubmitEnableTwoFactorAuthForm = state => Boolean(
+  state[ENABLE_TWO_FACTOR_AUTH_FORM_ID].fields.code.value
+);
 
 export const canSubmitLoginForm = state => Boolean(
   state[LOGIN_FORM_ID].fields.email.value &&

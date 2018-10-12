@@ -16,10 +16,10 @@ const app = (state = initialState, action) => {
     }
     
     case types.MESSAGE_SHOW: {
-      const { message } = action.payload;
+      const { text, type } = action.payload;
       const id = uuidv4();
 
-      return { ...state, messages: { ...state.messages, [id]: message } };
+      return { ...state, messages: { ...state.messages, [id]: { text, type } } };
     }
     
     case types.MESSAGE_HIDE: {

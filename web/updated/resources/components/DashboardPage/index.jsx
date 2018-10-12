@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Layout from '../LayoutAuthenticated';
 import OptionsBar from '../OptionsBar';
-import Gnome2Icon from '../../assets/svg/gnome2.svg';
+import Svg from '../Svg';
+import { icon } from '../../constants';
 import './style.css';
 
 const DashboardPage = props =>
@@ -17,7 +18,7 @@ const DashboardPage = props =>
             <div className="dashboard-section">
               <div className="dashboard-section-header">
                 <div className="dashboard-section-heading">
-                  <Gnome2Icon />
+                  <Svg name={icon.gnome2} />
                   <h1>This is my dashboard</h1>
                 </div>
               </div>

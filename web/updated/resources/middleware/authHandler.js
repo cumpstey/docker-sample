@@ -1,6 +1,6 @@
 import { replace } from 'connected-react-router';
 import pathToRegexp from 'path-to-regexp';
-import * as currentUserActions from '../actions/currentUser';
+import * as currentUserActions from '../actions/currentUser/user';
 import { routes } from '../configuration';
 import { storage } from '../constants';
 import * as user from '../helpers/user';
@@ -39,7 +39,7 @@ export default store => next => (action) => {
     const isLoggedIn = user.isLoggedIn();
 
     // If user is logged in, but user details are not in the state, load them.
-    if (isLoggedIn && !state.currentUser.isLoaded && !state.currentUser.isLoading) {
+    if (isLoggedIn && !state.currentUser.userIsLoaded && !state.currentUser.userIsLoading) {
       store.dispatch(currentUserActions.fetch());
     }
 
@@ -62,7 +62,7 @@ export default store => next => (action) => {
   }
 
   // Remove stored authentication token
-  if (action.type === currentUserTypes.UNSET) {
+  if (action.type === currentUserTypes.USER_UNSET) {
     localStorage.removeItem(storage.token);
   }
 

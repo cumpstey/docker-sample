@@ -1,16 +1,20 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import VerifyEmailPage from '../components/VerifyEmailPage';
-// import * as EmailFormActions from '../actions/forms/verifyEmail';
-// import * as selectors from '../selectors';
+import { FORM_ID } from '../configuration/forms/verifyEmail';
+import * as actions from '../actions/forms/verifyEmail';
 
 const mapStateToProps = state => ({
-  // canSubmit: selectors.canSubmitLoginForm(state),
-  // generalError: state.loginForm.errors[''],
+  generalError: state[FORM_ID].errors[''],
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  // handleSignInClick: loginFormActions.submit,
+  handleSubmit: actions.submit,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(VerifyEmailPage);
+const mergeProps = (stateProps, dispatchProps, ownProps) => ({
+  ...stateProps,
+  handleSubmit: () => dispatchProps.handleSubmit(ownProps.match.params.userId, ownProps.match.params.token),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(VerifyEmailPage);

@@ -1,40 +1,37 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Link from '../Link';
-import Button from '../Button';
-import Form from '../Form';
-import Callout from '../Callout';
+import FormMessage from '../FormMessage';
 import Layout from '../LayoutAnonymous';
-import TextField from '../../containers/TextField';
+import Link from '../Link';
 import AuthBox from '../AuthBox';
-import config from '../../configuration';
+import { routes } from '../../configuration';
 
-const resetPasswordLink = <Link to={config.routes.forgotPassword}>Forgot Password?</Link>;
+class VerifyEmailPage extends Component {
+  static propTypes = {
+    handleSubmit: PropTypes.func,
+    generalError: PropTypes.string,
+  };
+  
+  constructor(props) {
+    super(props);
+  }
 
-const LoginPage = props =>
-  <Layout className="login-page">
-    <AuthBox footer={resetPasswordLink}>
-      {props.generalError &&
-        <Callout text={props.generalError} type="error" />
-      }
-      <Form handleSubmit={props.handleSignInClick}>
-        <TextField id="email" formId="loginForm" />
-        <TextField id="password" formId="loginForm" />
-        <Button
-          text="Sign in"
-          color="blue"
-          isDisabled={!props.canSubmit}
-          handleClick={props.handleSignInClick}
-          fullWidth
-        />
-      </Form>
-    </AuthBox>
-  </Layout>;
+  componentDidMount() {
+    this.props.handleSubmit();
+  }
 
-LoginPage.propTypes = {
-  canSubmit: PropTypes.bool,
-  handleSignInClick: PropTypes.func,
-  generalError: PropTypes.string,
-};
+  render() {
+    const loginLink = <div><Link to={routes.login}>Log in</Link>.</div>;
 
-export default LoginPage;
+    return <Layout className="verify-email-page">
+      <AuthBox title="Verify email" footer={loginLink}>
+        {this.props.generalError &&
+          <FormMessage text={this.props.generalError} type="error" />
+        }
+        {!this.props.generalError && <>Loading...</>}
+      </AuthBox>
+    </Layout>;
+  }
+}
+
+export default VerifyEmailPage;

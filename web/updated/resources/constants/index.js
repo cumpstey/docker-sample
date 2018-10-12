@@ -25,3 +25,7 @@ export const icon = {
   pin: 'pin',
   tools: 'tools',
 };
+
+export const modal = {
+  enableTwoFactorAuth: 'enableTwoFactorAuth',
+};

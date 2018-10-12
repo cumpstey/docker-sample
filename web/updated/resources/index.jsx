@@ -34,6 +34,7 @@ import VerifyEmailPage from './containers/VerifyEmailPage';
 // import ResetPasswordPage from './containers/ResetPasswordPage';
 // import CreatePasswordPage from './containers/CreatePasswordPage';
 import DashboardPage from './containers/DashboardPage';
+import AccountPage from './containers/AccountPage';
 
 // TODO: This was called on router.onUpdate, but I believe this no longer exists.
 // Should move into the page components maybe.
@@ -69,7 +70,7 @@ render(
       <Route path={routes.login} component={LoginPage} />
       <Route path={routes.register} component={RegisterPage} />
       <Route path={routes.verifyEmail} component={VerifyEmailPage} />
-        {/* <Route path="/dashboard" component={DashboardPage} /> */}
+      <Route path={routes.account} component={AccountPage} />
         {/* <Route path="error" component={ErrorPage} />
         <Route path="sign-up/:token" component={CreatePasswordPage} />
         <Route path="forgot-password" component={ForgotPasswordPage} />

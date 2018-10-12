@@ -10,11 +10,13 @@ import AuthBox from '../AuthBox';
 import { routes } from '../../configuration';
 import { FORM_ID } from '../../configuration/forms/register';
 
-const loginLink = <div>Already have an account? <Link to={routes.login}>Log in</Link>.</div>;
+const resetPasswordLink = <div>
+  Already signed up? <Link to={routes.login}>Log in here</Link>.
+</div>;
 
 const RegisterPage = props =>
-  <Layout className="register-page">
-    <AuthBox title="Register" footer={loginLink}>
+  <Layout className="login-page">
+    <AuthBox title="Log in" footer={resetPasswordLink}>
       {props.generalError &&
         <FormMessage text={props.generalError} type="error" />
       }
@@ -24,7 +26,7 @@ const RegisterPage = props =>
         <TextField id="email" formId={FORM_ID} />
         <TextField id="password" formId={FORM_ID} />
         <Button
-          text="Register"
+          text="Sign in"
           color="blue"
           isDisabled={!props.canSubmit}
           handleClick={props.handleSubmit}

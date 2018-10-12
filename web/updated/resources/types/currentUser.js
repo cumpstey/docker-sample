@@ -1,7 +1,13 @@
-export const SET = 'currentUser/SET';
+export const USER_SET = 'currentUser/user/SET';
 
-export const UNSET = 'currentUser/UNSET';
+export const USER_UNSET = 'currentUser/user/UNSET';
 
-export const FETCHING = 'currentUser/FETCHING';
+export const USER_FETCHING = 'currentUser/user/FETCHING';
 
-export const FETCHED = 'currentUser/FETCHED';
+export const USER_FETCHED = 'currentUser/user/FETCHED';
+
+export const TWOFACTORAUTH_SET = 'currentUser/twoFactorAuth/SET';
+
+export const TWOFACTORAUTH_FETCHING = 'currentUser/twoFactorAuth/FETCHING';
+
+export const TWOFACTORAUTH_FETCHED = 'currentUser/twoFactorAuth/FETCHED';

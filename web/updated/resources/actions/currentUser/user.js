@@ -1,25 +1,26 @@
-import * as api from '../api';
-import * as types from '../types/currentUser';
+import * as api from '../../api';
+import * as types from '../../types/currentUser';
 import {
   mapRawUserData,
   mapRawRolesData,
-} from '../helpers/user';
+} from '../../helpers/user';
+import * as errorActions from '../error';
 
 export const set = (user, roles) => ({
-  type: types.SET,
+  type: types.USER_SET,
   payload: { user, roles }
 });
 
 export const unset = () => ({
-  type: types.UNSET,
+  type: types.USER_UNSET,
 });
 
 export const startFetch = () => ({
-  type: types.FETCHING,
+  type: types.USER_FETCHING,
 });
 
 export const endFetch = () => ({
-  type: types.FETCHED,
+  type: types.USER_FETCHED,
 });
 
 export const fetch = () => (dispatch) => {
@@ -27,7 +28,7 @@ export const fetch = () => (dispatch) => {
     .then((response) => {
       dispatch(set(mapRawUserData(response.data), mapRawRolesData(response.data)));
     })
-    .catch(error => dispatch(handleError(error)));
+    .catch(error => dispatch(errorActions.handleError(error)));
 
   dispatch(startFetch());
 

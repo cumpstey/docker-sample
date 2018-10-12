@@ -1,4 +1,4 @@
-import routes from './routes';
+// import routes from './routes';
 import request from './request';
 import { storage } from '../constants';
 
@@ -9,14 +9,24 @@ const getHeaders = () => {
   return headers;
 };
 
-export const submitLogin = data =>
-  request.post(routes.get('login'), data, { headers: getHeaders() });
-  
-export const submitRegister = data =>
-  request.post(routes.get('register'), data, { headers: getHeaders() });
+const root = '/api/v1'
 
-export const getMe = () =>
-  request.get(routes.get('me'), { headers: getHeaders() });
+// Authentication
+export const login = data => request.post(`${root}/account/authenticate`, data, { headers: getHeaders() });
+export const loginTwoFactor = data => request.post(`${root}/account/authenticate2fa`, data, { headers: getHeaders() });
+
+// Registration
+export const register = data => request.post(`${p.root}/account/register`, data, { headers: getHeaders() });
+export const verifyEmail = data => request.put(`${p.root}/account/verify-email`, data, { headers: getHeaders() });
+
+// Two factor authentication management
+export const getTwoFactorAuthStatus = () => request.get(`${root}/account/2fa`, { headers: getHeaders() });
+export const getTwoFactorAuthSetup = () => request.get(`${root}/account/2fa/enable`, { headers: getHeaders() });
+export const enableTwoFactorAuth = data => request.put(`${root}/account/2fa/enable`, data, { headers: getHeaders() });
+export const disableTwoFactorAuth = data => request.put(`${root}/account/2fa/disable`, data, { headers: getHeaders() });
+
+// User profile
+export const getMe = () => request.get(`${root}/account`, { headers: getHeaders() });
 
 // export const updateMe = data =>
 //   request.post(routes.get('me'), data, { headers: getHeaders() });

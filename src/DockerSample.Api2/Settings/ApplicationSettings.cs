@@ -12,7 +12,7 @@ namespace DockerSample.Api.Settings
         /// <summary>
         /// Secret key for the JWT authentication system.
         /// </summary>
-        public string Secret { get; set; }
+        public string JwtSecret { get; set; }
 
         public Uri FrontEndUri { get; set; }
     }

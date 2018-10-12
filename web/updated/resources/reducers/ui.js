@@ -37,7 +37,6 @@ const app = (state = initialState, action) => {
       return { ...state, isMobileNavVisible };
     }
 
-    case uiTypes.MODAL_OPEN:
     case uiTypes.DROPDOWNMENU_CLOSE: {
       const dropdownMenuId = null;
       const isMobileNavVisible = false;
@@ -49,8 +48,10 @@ const app = (state = initialState, action) => {
 //
     case uiTypes.MODAL_OPEN: {
       const { modalId, origin, isNonCancellable } = action.payload;
+      const dropdownMenuId = null;
+      const isMobileNavVisible = false;
 
-      return { ...state, modal: { modalId, origin, isNonCancellable } };
+      return { ...state, isMobileNavVisible, dropdownMenuId, modal: { modalId, origin, isNonCancellable } };
     }
 
     case 'SET_MODAL_CURRENT_TAB_INDEX': {

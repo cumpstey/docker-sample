@@ -11,7 +11,13 @@ namespace System.Collections.Generic
     {
         #region Fields
 
+        public const string Unexpected = "Unexpected";
+
         public const string EmailNotVerified = "EmailNotVerified";
+
+        public const string Invalid2faCode = "Invalid2faCode";
+
+        public const string UserLockedOut = "UserLockedOut";
 
         public const string UserNotFound = "UserNotFound";
 

@@ -19,7 +19,7 @@ const AuthBox = ({ title, children, footer }) =>
 
 AuthBox.propTypes = {
   title: PropTypes.string,
-  children: PropTypes.array,
+  children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   footer: PropTypes.element,
 };
 

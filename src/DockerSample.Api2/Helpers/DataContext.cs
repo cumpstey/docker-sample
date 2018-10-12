@@ -21,14 +21,5 @@ namespace DockerSample.Api.Helpers
         }
 
         #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// The collection of <see cref="ApplicationUser"/> entities held in the database.
-        /// </summary>
-        public DbSet<ApplicationUser> Users { get; set; }
-
-        #endregion
     }
 }

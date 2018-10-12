@@ -8,10 +8,10 @@ namespace DockerSample.Api.Entities
     /// </summary>
     public class ApplicationUser : IdentityUser
     {
-        ///// <summary>
-        ///// Identifier
-        ///// </summary>
-        //public Guid Id { get; set; }
+        /// <summary>
+        /// User has chosen not to set up two factor authentication; do not prompt to do this
+        /// </summary>
+        public bool No2FAPrompt { get; set; }
 
         /// <summary>
         /// First name
@@ -22,22 +22,5 @@ namespace DockerSample.Api.Entities
         /// Last name
         /// </summary>
         public string LastName { get; set; }
-
-        ///// <summary>
-        ///// Email address
-        ///// </summary>
-        //public string Email { get; set; }
-
-        ///// <summary>
-        ///// Hash of password
-        ///// </summary>
-        //public byte[] PasswordHash { get; set; }
-
-        ///// <summary>
-        ///// Salt used in hashing password
-        ///// </summary>
-        //public byte[] PasswordSalt { get; set; }
-
-        //public UserRole[] Roles { get; set; }
     }
 }

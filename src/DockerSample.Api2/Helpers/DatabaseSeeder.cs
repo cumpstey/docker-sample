@@ -39,13 +39,11 @@ namespace DockerSample.Api.Helpers
         /// </summary>
         public async Task SeedRolesAsync()
         {
-            // In Startup iam creating first Admin Role and creating a default Admin User    
+            // Create Administrator role
             if (!await _roleManager.RoleExistsAsync(Roles.Administrator))
             {
-                // first we create Admin rool   
                 var role = new IdentityRole(Roles.Administrator);
                 var result = await _roleManager.CreateAsync(role);
-
             }
         }
 
@@ -54,7 +52,7 @@ namespace DockerSample.Api.Helpers
         /// </summary>
         public async Task SeedUsersAsync()
         {
-            // Create admin user
+            // Create admin user, email confirmed, no 2FA
             var admin = new ApplicationUser
             {
                 UserName = "admin@example.com",
@@ -62,6 +60,7 @@ namespace DockerSample.Api.Helpers
                 FirstName = "Bob",
                 LastName = "Jones",
                 EmailConfirmed = true,
+                TwoFactorEnabled = false,
             };
             var adminResult = await _userManager.CreateAsync(admin, "Password[1]");
             if (adminResult.Succeeded)
@@ -69,16 +68,43 @@ namespace DockerSample.Api.Helpers
                 await _userManager.AddToRoleAsync(admin, Roles.Administrator);
             }
 
-            // Create standard user
-            var user = new ApplicationUser
+            // Create standard user, email confirmed, no 2FA
+            var user1 = new ApplicationUser
             {
-                UserName = "user@example.com",
-                Email = "user@example.com",
+                UserName = "user1@example.com",
+                Email = "user1@example.com",
                 FirstName = "John",
                 LastName = "Smith",
                 EmailConfirmed = true,
+                TwoFactorEnabled = false,
             };
-            var userResult = await _userManager.CreateAsync(user, "Password[1]");
+            var user1Result = await _userManager.CreateAsync(user1, "Password[1]");
+
+
+            // Create standard user, email not confirmed, no 2FA
+            var user2 = new ApplicationUser
+            {
+                UserName = "user2@example.com",
+                Email = "user2@example.com",
+                FirstName = "John",
+                LastName = "Smith",
+                EmailConfirmed = false,
+                TwoFactorEnabled = false,
+            };
+            var user2Result = await _userManager.CreateAsync(user2, "Password[1]");
+
+
+            // Create standard user, email confirmed, 2FA enabled
+            var user3 = new ApplicationUser
+            {
+                UserName = "user3@example.com",
+                Email = "user3@example.com",
+                FirstName = "John",
+                LastName = "Smith",
+                EmailConfirmed = true,
+                TwoFactorEnabled = true,
+            };
+            var user3Result = await _userManager.CreateAsync(user3, "Password[1]");
         }
 
         #endregion

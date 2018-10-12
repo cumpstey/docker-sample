@@ -6,12 +6,17 @@ import * as actions from '../actions/forms/login';
 import * as selectors from '../selectors';
 
 const mapStateToProps = state => ({
-  canSubmit: selectors.canSubmitLoginForm(state),
-  generalError: state[FORM_ID].errors[''],
+  requireTwoFactorAuth: state.loginForm && state.loginForm.requireTwoFactorAuth,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  handleSubmit: actions.submit,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
+const mergeProps = (stateProps, dispatchProps, ownProps) => ({
+  ...ownProps,
+  ...stateProps,
+  // requireTwoFactorAuth: ownProps.location.hash = '#two-factor',
+  // f: console.log(ownProps),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(LoginPage);

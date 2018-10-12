@@ -4,28 +4,25 @@ import classnames from 'classnames';
 import './style.css';
 
 const Callout = (props) => {
-  const cssClasses = classnames('callout', {
-    'callout--error': props.type === 'error',
-    'callout--success': props.type === 'success',
+  const getClassName = (type) => classnames('callout', {
+    'callout--error': type === 'error',
+    'callout--success': type === 'success',
   });
 
-  const text = (Array.isArray(props.text) ? props.text : [props.text]).map((i, j) => <p key={j}>{i}</p>);
+  const items = (props.messages || []).map((i, j) => {
+    const className = getClassName(i.type);
+    return <div key={j} className={className}><p>{i.text}</p></div>
+  });
 
-  return (!!text.length &&
+  return (!!items.length &&
     <div className="callout-container">
-      <div className={cssClasses}>
-        {text}
-      </div>
+      {items}
     </div>
   );
 };
 
 Callout.propTypes = {
-  text: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]),
-  type: PropTypes.string,
+  messages: PropTypes.array,
 };
 
 export default Callout;
