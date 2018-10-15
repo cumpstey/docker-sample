@@ -7,7 +7,7 @@ import { role } from '../../constants';
 class UserManagementPage extends Component {
 
   render() {
-    return <RestrictByRole restrictTo={[role.administator, role.manager]}>
+    return <RestrictByRole restrictTo={role.administrator}>
         <Layout className="user-management-page">
           <h1>User management</h1>
         </Layout>

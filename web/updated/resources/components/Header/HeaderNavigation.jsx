@@ -5,8 +5,6 @@ import config from '../../configuration';
 import { role } from '../../constants';
 
 const HeaderNavigation = (props) => {
-  console.log(props);
-
   switch (props.role) {
 
     case role.administrator:

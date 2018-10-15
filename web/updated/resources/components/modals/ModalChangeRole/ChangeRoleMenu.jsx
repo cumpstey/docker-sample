@@ -2,11 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as appActions from '../../../actions/app';
+import * as impersonateRoleActions from '../../../actions/impersonateRole';
 import * as uiActions from '../../../actions/ui';
 import './style.css';
 import Menu from '../../Menu';
 import { icon, modal } from '../../../constants';
+
+const DEFAULT_ROLE = 'Default';
+
+const DEFAULT_ROLE_LABEL = 'Default user';
 
 const mapStateToProps = state => ({
   currentRole: state.app.role,
@@ -14,7 +18,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  setRole: appActions.setRole,
+  setRole: impersonateRoleActions.fetch,
   closeModal: uiActions.closeModal,
 }, dispatch);
 
@@ -29,14 +33,19 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => ({
 });
 
 const ChangeRoleMenu = props => {
-  const menu = props.roles.map(role => ({
+  const menu = Array.concat(props.roles.map(role => ({
     id: role,
     icon: icon.person,
     name: role,
     handleClick: () => props.setRole(role),
-  }));
+  })), {
+    id: DEFAULT_ROLE,
+    icon: icon.person,
+    name: DEFAULT_ROLE_LABEL,
+    handleClick: () => props.setRole(null),
+  });
 
-  return <Menu data={menu} selectedMenuItemId={props.currentRole} />
+  return <Menu data={menu} selectedMenuItemId={props.currentRole || DEFAULT_ROLE} />
 }
 
 ChangeRoleMenu.propTypes = {

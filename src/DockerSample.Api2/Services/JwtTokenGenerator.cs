@@ -41,20 +41,37 @@ namespace DockerSample.Api.Services
 
         #region Methods
 
-        public async Task<string> GenerateTokenAsync(ApplicationUser user, string[] restrictToRoles = null)
+        public async Task<string> GenerateTokenForDefaultRole(ApplicationUser user)
+        {
+            return await GenerateTokenAsync(user, false);
+        }
+
+        public async Task<string> GenerateTokenForRole(ApplicationUser user, string role)
+        {
+            return await GenerateTokenAsync(user, true, role);
+        }
+
+        private async Task<string> GenerateTokenAsync(ApplicationUser user, bool restrictToRole, string role = null)
         {
             // Retrieve roles to which the user is assigned
             var roles = await _userManager.GetRolesAsync(user);
-            var restrictedRoles = restrictToRoles == null
-                ? roles
-                : roles.Where(i => restrictToRoles.Contains(i));
+            //var restrictedRoles = restrictToRoles == null
+            //    ? roles
+            //    : roles.Where(i => restrictToRoles.Contains(i));
+            var authorisedRole = restrictToRole
+                ? role == null || roles.Contains(role) ? role : roles.FirstOrDefault()
+                : roles.FirstOrDefault();
 
             // Generate JWT token to return in the response
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_applicationSettings.JwtSecret);
 
             var claims = new List<Claim>() { new Claim(ClaimTypes.Name, user.Id.ToString()) };
-            claims.AddRange(restrictedRoles.Select(i => new Claim(ClaimTypes.Role, i)));
+            //claims.AddRange(restrictedRoles.Select(i => new Claim(ClaimTypes.Role, i)));
+            if (authorisedRole != null)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, authorisedRole));
+            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

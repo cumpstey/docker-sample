@@ -116,7 +116,7 @@ namespace DockerSample.Api.Controllers
                     return Unauthorized(new ErrorDto(ErrorDto.EmailNotVerified, "Please verify your email address by clicking the link in the email you have been sent."));
                 }
 
-                var tokenString = await _tokenGenerator.GenerateTokenAsync(user);
+                var tokenString = await _tokenGenerator.GenerateTokenForDefaultRole(user);
 
                 // Return authentication token
                 return Ok(new AuthenticatedResponseDto
@@ -189,7 +189,7 @@ namespace DockerSample.Api.Controllers
                 }
 
                 // Return authentication token
-                var tokenString = await _tokenGenerator.GenerateTokenAsync(user);
+                var tokenString = await _tokenGenerator.GenerateTokenForDefaultRole(user);
                 return Ok(new AuthenticatedResponseDto
                 {
                     Token = tokenString,
@@ -217,7 +217,7 @@ namespace DockerSample.Api.Controllers
         /// If the user is not a member of the requested role, it is not included as a claim in the 
         /// returned token.
         /// </summary>
-        /// <param name="request">Request object containing the required role</param>
+        /// <param name="role">Name of the required role</param>
         /// <returns>JWT authentication token</returns>
         /// <response code="200">Successfully authenticated</response>
         /// <response code="400">Invalid data provided</response>
@@ -226,7 +226,7 @@ namespace DockerSample.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> GetTokenForRole([FromBody]GetTokenForRoleRequestDto request)
+        public async Task<IActionResult> GetTokenForRole(string role)
         {
             // If validation fails, return error response
             if (!ModelState.IsValid)
@@ -242,7 +242,7 @@ namespace DockerSample.Api.Controllers
             }
 
             // Generate token restricted to specified role
-            var tokenString = await _tokenGenerator.GenerateTokenAsync(user, new[] { request.Role });
+            var tokenString = await _tokenGenerator.GenerateTokenForRole(user, role);
 
             // Return authentication token
             return Ok(new AuthenticatedResponseDto

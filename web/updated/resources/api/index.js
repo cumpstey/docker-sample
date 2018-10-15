@@ -28,6 +28,10 @@ export const disableTwoFactorAuth = data => request.put(`${root}/account/2fa/dis
 // User profile
 export const getMe = () => request.get(`${root}/account`, { headers: getHeaders() });
 
+// Authorisation
+export const impersonateRole = role => request.get(`${root}/account/impersonate-role?role=${role ? role : ''}`, { headers: getHeaders() });
+
+
 // export const updateMe = data =>
 //   request.post(routes.get('me'), data, { headers: getHeaders() });
 

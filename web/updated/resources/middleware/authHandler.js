@@ -1,5 +1,6 @@
 import { replace } from 'connected-react-router';
 import pathToRegexp from 'path-to-regexp';
+import jwt from 'jsonwebtoken';
 import * as currentUserActions from '../actions/currentUser/user';
 import { routes } from '../configuration';
 import { storage } from '../constants';
