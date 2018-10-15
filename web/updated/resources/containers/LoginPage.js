@@ -15,8 +15,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   ...ownProps,
   ...stateProps,
-  // requireTwoFactorAuth: ownProps.location.hash = '#two-factor',
-  // f: console.log(ownProps),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(LoginPage);

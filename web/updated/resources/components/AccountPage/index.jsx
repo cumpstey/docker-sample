@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Button from '../Button';
+import Form from '../Form';
 import Layout from '../LayoutAuthenticated';
 import OptionsBar from '../OptionsBar';
 import './style.css';
@@ -46,9 +48,18 @@ class AccountPage extends Component {
                 </div>
                 <div>
                   {this.props.twoFactorAuthIsLoaded && this.props.twoFactorAuthEnabled &&
-                    <dl>
-                      <dt>Recovery codes remaining</dt><dd>{this.props.twoFactorAuthRecoveryCodesRemaining}</dd>
-                    </dl>
+                    <>
+                      <dl>
+                        <dt>Recovery codes remaining</dt><dd>{this.props.twoFactorAuthRecoveryCodesRemaining}</dd>
+                      </dl>
+                      <Form handleSubmit={this.props.disableTwoFactorAuth}>
+                        <Button
+                          text="Disable two factor authentication"
+                          color="blue"
+                          handleClick={this.props.disableTwoFactorAuth}
+                        />
+                      </Form>
+                    </>
                   }
                   {this.props.twoFactorAuthIsLoaded && !this.props.twoFactorAuthEnabled &&
                     <p onClick={this.props.showEnableTwoFactorAuthForm}>Enable two factor authentication</p>

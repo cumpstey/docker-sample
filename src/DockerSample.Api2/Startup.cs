@@ -81,7 +81,8 @@ namespace DockerSample.Api
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(i => i.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 
             services.AddAutoMapper();
 
@@ -174,8 +175,6 @@ namespace DockerSample.Api
             DatabaseSeeder databaseSeeder
         )
         {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-
             if (env.IsDevelopment())
             {
                 // Seed database

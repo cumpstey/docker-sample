@@ -1,5 +1,6 @@
 import backgroundImage from '../assets/images/main.jpg';
 import { icon } from '../constants';
+import { FORM_ID as DISABLETWOFACTORAUTH_FORM_ID, default as disableTwoFactorAuthForm } from './forms/disableTwoFactorAuth';
 import { FORM_ID as ENABLETWOFACTORAUTH_FORM_ID, default as enableTwoFactorAuthForm } from './forms/enableTwoFactorAuth';
 import { FORM_ID as LOGIN_FORM_ID, default as loginForm } from './forms/login';
 import { FORM_ID as LOGINTWOFACTOR_FORM_ID, default as loginTwoFactorForm } from './forms/loginTwoFactor';
@@ -30,6 +31,7 @@ export const routes = {
 };
 
 export const forms = {
+  [DISABLETWOFACTORAUTH_FORM_ID]: disableTwoFactorAuthForm,
   [ENABLETWOFACTORAUTH_FORM_ID]: enableTwoFactorAuthForm,
   [LOGIN_FORM_ID]: loginForm,
   [LOGINTWOFACTOR_FORM_ID]: loginTwoFactorForm,

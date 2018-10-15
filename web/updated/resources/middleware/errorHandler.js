@@ -32,14 +32,13 @@ export default store => next => (action) => {
 
     const { formId } = action.payload;
     
-    if (!action.payload.error.response) {
-      // If there is no response in the error, it's because the api is not reachable.
-      // TODO: This is actually possible from a JS exception too. Need to distinguish somehow
+    if (action.payload.error.request && !action.payload.error.response) {
+      // If there is no response in an error from an http request, it's because the api is not reachable.
       store.dispatch(appActions.showMessage("Network error", "error"));
     } else {
       const { status, data } = action.payload.error.response;
       
-      if (status === 400 && data.errors[''].some(i => i.code === "UserNotFound")) {
+      if (status === 400 && data.errors && data.errors[''].some(i => i.code === "UserNotFound")) {
         // This is returned if there's a valid user in the token, but that user no longer exists
         store.dispatch(currentUserActions.unset());
         return store.dispatch(replace(config.routes.login));
@@ -52,7 +51,7 @@ export default store => next => (action) => {
         const errors = reduceErrors(data);
         store.dispatch(formActions.updateErrors(formId, errors));
       } else {
-
+        store.dispatch(appActions.showMessage("Unknown error", "error"));
       }
 
       // if (action.error.response && action.error.response.status === 422) {

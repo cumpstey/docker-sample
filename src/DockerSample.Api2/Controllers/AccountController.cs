@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -10,15 +8,12 @@ using AutoMapper;
 using DockerSample.Api.Dtos;
 using DockerSample.Api.Dtos.Account;
 using DockerSample.Api.Entities;
-using DockerSample.Api.Helpers;
 using DockerSample.Api.Services;
 using DockerSample.Api.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DockerSample.Api.Controllers
 {
@@ -56,6 +51,8 @@ namespace DockerSample.Api.Controllers
         /// </summary>
         /// <param name="userManager">User manager</param>
         /// <param name="signInManager">Sign in manager</param>
+        /// <param name="tokenGenerator">Authentication token generator</param>
+        /// <param name="urlEncoder">Url encoder</param>
         /// <param name="emailSender">Email sender</param>
         /// <param name="mapper">Mapper</param>
         /// <param name="applicationSettings">Settings</param>
@@ -88,7 +85,7 @@ namespace DockerSample.Api.Controllers
         /// Authenticates a user by email address and password.
         /// </summary>
         /// <param name="request">Request object containing credentials</param>
-        /// <returns>User details, and a JWT authentication token</returns>
+        /// <returns>JWT authentication token</returns>
         /// <response code="200">Successfully authenticated</response>
         /// <response code="400">Invalid data provided</response>
         /// <response code="401">User matching the provided credentials does not exist</response>
@@ -131,8 +128,6 @@ namespace DockerSample.Api.Controllers
             // If two factor auth is required, return success response
             if (result.RequiresTwoFactor)
             {
-                //var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-                //var twofatoken = await _userManager.GenerateTwoFactorTokenAsync(user, "");
                 return Ok(new Require2FAResponseDto());
             }
 
@@ -146,8 +141,21 @@ namespace DockerSample.Api.Controllers
             return Unauthorized(new ErrorDto(ErrorDto.UserNotFound, "User not found matching the provided credentials"));
         }
 
-        [HttpPost("authenticate2fa")]
+        /// <summary>
+        /// Authenticates a user by verifying a TOTP code against existing user details stored in a cookie,
+        /// which was returned by the authenticate request if two factor authentication is enabled for the user.
+        /// Two factor authentication requires cookies in order to work - there is no alternative.
+        /// </summary>
+        /// <param name="request">Request object containing the TOTP code</param>
+        /// <returns>JWT authentication token</returns>
+        /// <response code="200">Successfully authenticated</response>
+        /// <response code="400">Invalid data provided</response>
+        /// <response code="401">User matching the provided credentials does not exist</response>
         [AllowAnonymous]
+        [HttpPost("authenticate2fa")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> AuthenticateWith2fa([FromBody]AuthenticateWith2faRequestDto request)
         {
             // If validation fails, return error response
@@ -168,11 +176,11 @@ namespace DockerSample.Api.Controllers
             var authenticatorCode = request.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
             // Verify the 2FA code
-            //var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, false, request.RememberMachine);
-            var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, authenticatorCode);
+            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, false, request.RememberMachine);
+            //var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, authenticatorCode);
 
-            //if (result.Succeeded)
-            if (is2faTokenValid)
+            if (result.Succeeded)
+            //if (is2faTokenValid)
             {
                 // If email not yet confirmed, return error response
                 if (!user.EmailConfirmed)
@@ -188,11 +196,11 @@ namespace DockerSample.Api.Controllers
                 });
             }
 
-            //// If user is locked out, return error response
-            //if (result.IsLockedOut)
-            //{
-            //    return Unauthorized(new ErrorDto(ErrorDto.UserLockedOut, "Account locked"));
-            //}
+            // If user is locked out, return error response
+            if (result.IsLockedOut)
+            {
+                return Unauthorized(new ErrorDto(ErrorDto.UserLockedOut, "Account locked"));
+            }
 
             // If authentication failed, return error response
             return Unauthorized(new ErrorDto(ErrorDto.Invalid2faCode, "Invalid two factor authentication code"));
@@ -200,10 +208,65 @@ namespace DockerSample.Api.Controllers
 
         #endregion
 
+        #region Impersonation
+
+        /// <summary>
+        /// Enables the user to impersonate a user in a more restricted role, by providing a JWT token
+        /// with a claim for only the requested role, rather than claims for all roles to which the
+        /// user is entitled.
+        /// If the user is not a member of the requested role, it is not included as a claim in the 
+        /// returned token.
+        /// </summary>
+        /// <param name="request">Request object containing the required role</param>
+        /// <returns>JWT authentication token</returns>
+        /// <response code="200">Successfully authenticated</response>
+        /// <response code="400">Invalid data provided</response>
+        /// <response code="401">User matching the provided credentials does not exist</response>
+        [HttpGet("impersonate-role")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetTokenForRole([FromBody]GetTokenForRoleRequestDto request)
+        {
+            // If validation fails, return error response
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            // Retrieve user
+            var user = await _userManager.FindByIdAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return BadRequest(new ErrorDto(ErrorDto.UserNotFound, "User not found"));
+            }
+
+            // Generate token restricted to specified role
+            var tokenString = await _tokenGenerator.GenerateTokenAsync(user, new[] { request.Role });
+
+            // Return authentication token
+            return Ok(new AuthenticatedResponseDto
+            {
+                Token = tokenString,
+            });
+        }
+
+        #endregion
+
         #region Manage two factor authentication
 
+        /// <summary>
+        /// Get details of the user's two factor authentication status.
+        /// </summary>
+        /// <returns>Details of the user's two factor authentication status</returns>
+        /// <response code="200">Success</response>
+        /// <response code="400">Invalid data provided</response>
+        /// <response code="401">User matching the provided credentials does not exist</response>
         [HttpGet("2fa")]
-        public async Task<IActionResult> TwoFactorAuthentication()
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> Get2faStatus()
         {
             // Retrieve user
             var user = await _userManager.FindByIdAsync(User.Identity.Name);
@@ -212,17 +275,26 @@ namespace DockerSample.Api.Controllers
                 return BadRequest(new ErrorDto(ErrorDto.UserNotFound, "User not found"));
             }
 
-            var model = new
+            var response = new User2faStatusResponseDto
             {
-                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
+                ////HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
                 Is2faEnabled = user.TwoFactorEnabled,
                 RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
             };
 
-            return Ok(model);
+            return Ok(response);
         }
 
+        /// <summary>
+        /// Disable two factor authentication.
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">Invalid data provided</response>
+        /// <response code="401">User matching the provided credentials does not exist</response>
         [HttpPut("2fa/disable")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> Disable2fa()
         {
             // Retrieve user
@@ -242,8 +314,18 @@ namespace DockerSample.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Request details needed to enable two factor authentication.
+        /// </summary>
+        /// <returns>Shared key and url which can be registered with an authenticator app</returns>
+        /// <response code="200">Success</response>
+        /// <response code="400">Invalid data provided</response>
+        /// <response code="401">User matching the provided credentials does not exist</response>
         [HttpGet("2fa/enable")]
-        public async Task<IActionResult> EnableAuthenticator()
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> Get2Details()
         {
             // Retrieve user
             var user = await _userManager.FindByIdAsync(User.Identity.Name);
@@ -253,13 +335,24 @@ namespace DockerSample.Api.Controllers
             }
 
             // Generate response containing the shared key and url for the authenticator app
-            var response = new EnableAuthenticatorResponseDto();
+            var response = new User2faSetupResponseDto();
             await LoadSharedKeyAndQrCodeUrlAsync(user, response);
             return Ok(response);
         }
 
+        /// <summary>
+        /// Enable two factor authentication.
+        /// </summary>
+        /// <param name="request">Request object containing a TOTP code</param>
+        /// <returns>Recovery codes which can be used instead of a TOTP code</returns>
+        /// <response code="200">Success</response>
+        /// <response code="400">Invalid data provided</response>
+        /// <response code="401">User matching the provided credentials does not exist</response>
         [HttpPut("2fa/enable")]
-        public async Task<IActionResult> EnableAuthenticator(EnableAuthenticatorRequestDto request)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> Enable2fa(Enable2faRequestDto request)
         {
             // Retrieve user
             var user = await _userManager.FindByIdAsync(User.Identity.Name);
@@ -272,7 +365,6 @@ namespace DockerSample.Api.Controllers
             {
                 return ValidationProblem(ModelState);
             }
-
 
             // Strip spaces and hypens
             var verificationCode = request.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
@@ -288,11 +380,15 @@ namespace DockerSample.Api.Controllers
             await _userManager.SetTwoFactorEnabledAsync(user, true);
 
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-            //TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
-            //return RedirectToAction(nameof(ShowRecoveryCodes));
+            var response = new User2faEnabledResponseDto
+            {
+                Is2faEnabled = user.TwoFactorEnabled,
+                RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
+                RecoveryCodes = recoveryCodes,
+            };
 
-            return Ok(); //Also return recovery codes
+            return Ok(response);
         }
 
         #endregion
@@ -549,7 +645,7 @@ namespace DockerSample.Api.Controllers
                 unformattedKey);
         }
 
-        private async Task LoadSharedKeyAndQrCodeUrlAsync(ApplicationUser user, EnableAuthenticatorResponseDto dto)
+        private async Task LoadSharedKeyAndQrCodeUrlAsync(ApplicationUser user, User2faSetupResponseDto dto)
         {
             var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(unformattedKey))

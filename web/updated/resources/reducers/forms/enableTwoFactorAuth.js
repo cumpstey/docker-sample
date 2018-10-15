@@ -2,6 +2,7 @@ import form from './form';
 import { FORM_ID } from '../../configuration/forms/enableTwoFactorAuth';
 import * as routerTypes from '../../types/router';
 import * as types from '../../types/enableTwoFactorAuth';
+import * as uiTypes from '../../types/ui';
 
 const initialState = {
   isLoading: false,
@@ -16,7 +17,9 @@ const initialState = {
   setup: {
     sharedKey: '',
     authenticatorUrl: '',
-  }
+  },
+  success: false,
+  recoveryCodes: [],
 };
 
 export default (state = initialState, action) => {
@@ -50,6 +53,18 @@ export default (state = initialState, action) => {
       const setupIsLoading = false;
 
       return { ...state, setupIsLoading };
+    }
+
+    case types.SUCCESS: {
+      const { recoveryCodes } = action.payload;
+      const success = true;
+
+      return { ...state, success, recoveryCodes };
+    }
+    
+    // TODO: This should probably be a specific CLEAR event, fired when this modal is closed
+    case uiTypes.MODAL_CLOSE: {
+      return { ...state, ...initialState };
     }
   }
 

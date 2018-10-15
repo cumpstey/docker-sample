@@ -41,17 +41,20 @@ namespace DockerSample.Api.Services
 
         #region Methods
 
-        public async Task<string> GenerateTokenAsync(ApplicationUser user)
+        public async Task<string> GenerateTokenAsync(ApplicationUser user, string[] restrictToRoles = null)
         {
             // Retrieve roles to which the user is assigned
             var roles = await _userManager.GetRolesAsync(user);
+            var restrictedRoles = restrictToRoles == null
+                ? roles
+                : roles.Where(i => restrictToRoles.Contains(i));
 
             // Generate JWT token to return in the response
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_applicationSettings.JwtSecret);
 
             var claims = new List<Claim>() { new Claim(ClaimTypes.Name, user.Id.ToString()) };
-            claims.AddRange(roles.Select(i => new Claim(ClaimTypes.Role, i)));
+            claims.AddRange(restrictedRoles.Select(i => new Claim(ClaimTypes.Role, i)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

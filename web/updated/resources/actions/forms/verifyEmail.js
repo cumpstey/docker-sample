@@ -6,10 +6,7 @@ import * as appActions from '../app';
 import * as errorActions from '../error';
 import * as formActions from './';
 
-export const submit = (userId, token) => (dispatch, getState) => {
-  //const state = getState();
-  console.log('Checking email verification token', userId, token);
-
+export const submit = (userId, token) => (dispatch) => {
   const requestFinished = api.verifyEmail({ userId, token })
     .then((response) => {
       // Give the user a friendly message

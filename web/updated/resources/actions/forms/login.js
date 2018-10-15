@@ -19,8 +19,6 @@ export const submit = () => (dispatch, getState) => {
   const requestFinished = api.login(data)
     .then((response) => {
       if (response.data.require2FA) {
-console.log(response);
-
         dispatch(setRequireTwoFactor());
       } else {
         // Store authentication token

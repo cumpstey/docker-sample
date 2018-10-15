@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import AccountPage from '../components/AccountPage';
 import * as userActions from '../actions/currentUser/user';
 import * as twoFactorAuthActions from '../actions/currentUser/twoFactorAuth';
+import * as disableTwoFactorAuthActions from '../actions/forms/disableTwoFactorAuth';
 import * as uiActions from '../actions/ui';
 import { modal } from '../constants';
 
@@ -21,6 +22,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => bindActionCreators({
   fetchUser: userActions.fetch,
   fetchTwoFactorAuth: twoFactorAuthActions.fetch,
+  disableTwoFactorAuth: disableTwoFactorAuthActions.submit,
   showModal: uiActions.showModal
 }, dispatch);
 

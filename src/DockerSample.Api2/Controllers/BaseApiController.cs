@@ -1,4 +1,5 @@
 ﻿using DockerSample.Api.ActionResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DockerSample.Api.Controllers
@@ -18,12 +19,16 @@ namespace DockerSample.Api.Controllers
 
         #endregion
 
-        #region
+        #region Result helpers
 
-        protected UnauthorizedResult Unauthorized(object data)
-        {
-            return new UnauthorizedWithDataResult(data);
-        }
+        /// <summary>
+        /// Creates an <see cref="UnauthorizedObjectResult"/> that produces a <see cref="StatusCodes.Status401Unauthorized"/> response.
+        /// </summary>
+        /// <param name="error">An error object to be returned to the client.</param>
+        /// <returns>The created <see cref="UnauthorizedObjectResult"/> for the response.</returns>
+        [NonAction]
+        public virtual UnauthorizedObjectResult Unauthorized(object error)
+            => new UnauthorizedObjectResult(error);
 
         #endregion
     }

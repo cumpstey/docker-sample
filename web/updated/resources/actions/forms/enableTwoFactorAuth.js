@@ -1,12 +1,10 @@
-import { push } from 'connected-react-router';
-import config from '../../configuration';
 import { FORM_ID, default as formDefinition } from '../../configuration/forms/enableTwoFactorAuth';
 import * as api from '../../api';
-import { reduceServerFormFields } from '../../helpers/form';
-import { mapRawTwoFactorAuthSetupData } from '../../helpers/form';
+import { mapRawTwoFactorAuthSetupData, mapRawTwoFactorAuthRecoveryCodesData, reduceServerFormFields } from '../../helpers/form';
+import { mapRawTwoFactorAuthData } from '../../helpers/user';
 import * as errorActions from '../error';
 import * as formActions from './';
-import * as uiActions from '../ui';
+import * as twoFactorAuthActions from '../currentUser/twoFactorAuth';
 import * as types from '../../types/enableTwoFactorAuth';
 
 export const set = (setup) => ({
@@ -34,13 +32,19 @@ export const fetch = () => (dispatch) => {
   return requestFinished.then(() => dispatch(endFetch()));
 };
 
+export const success = (recoveryCodes) => ({
+  type: types.SUCCESS,
+  payload: { recoveryCodes }
+});
+
 export const submit = () => (dispatch, getState) => {
   const state = getState();
   const data = reduceServerFormFields(formDefinition.fields, state[FORM_ID].fields);
 
   const requestFinished = api.enableTwoFactorAuth(data)
     .then((response) => {
-      dispatch(uiActions.closeModal);
+      dispatch(twoFactorAuthActions.set(mapRawTwoFactorAuthData(response.data)));
+      dispatch(success(mapRawTwoFactorAuthRecoveryCodesData(response.data)));
     })
     .catch(error => dispatch(errorActions.handleFormError(FORM_ID, error)));
 
