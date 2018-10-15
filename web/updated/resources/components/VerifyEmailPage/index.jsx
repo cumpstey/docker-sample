@@ -7,11 +7,7 @@ import AuthBox from '../AuthBox';
 import { routes } from '../../configuration';
 
 class VerifyEmailPage extends Component {
-  static propTypes = {
-    handleSubmit: PropTypes.func,
-    generalError: PropTypes.string,
-  };
-  
+ 
   constructor(props) {
     super(props);
   }
@@ -33,5 +29,10 @@ class VerifyEmailPage extends Component {
     </Layout>;
   }
 }
+
+VerifyEmailPage.propTypes = {
+  handleSubmit: PropTypes.func,
+  generalError: PropTypes.string,
+};
 
 export default VerifyEmailPage;

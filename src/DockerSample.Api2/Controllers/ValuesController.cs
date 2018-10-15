@@ -25,7 +25,7 @@ namespace DockerSample.Api.Controllers
         /// </summary>
         [HttpGet("any-user")]
         [Authorize]
-        public ActionResult<IEnumerable<string>> GetAnyUser()
+        public ActionResult<IEnumerable<string>> GetForAny()
         {
             return new string[] { "This endpoint is accessible to all authenticated users" };
         }
@@ -33,9 +33,19 @@ namespace DockerSample.Api.Controllers
         /// <summary>
         /// Gets all values
         /// </summary>
+        [HttpGet("manager-only")]
+        [Authorize(Roles = Roles.Manager + "," + Roles.Administrator)]
+        public ActionResult<IEnumerable<string>> GetForManager()
+        {
+            return new string[] { "This endpoint is accessible only to users in the Administrator role" };
+        }
+
+        /// <summary>
+        /// Gets all values
+        /// </summary>
         [HttpGet("admin-only")]
         [Authorize(Roles = Roles.Administrator)]
-        public ActionResult<IEnumerable<string>> GetAdmin()
+        public ActionResult<IEnumerable<string>> GetForAdministrator()
         {
             return new string[] { "This endpoint is accessible only to users in the Administrator role" };
         }

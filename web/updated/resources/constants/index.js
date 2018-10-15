@@ -8,7 +8,8 @@ export const storage = {
 };
 
 export const role = {
-  administrator: 'Adminstrator'
+  administrator: 'Administrator',
+  manager: 'Manager',
 };
 
 export const icon = {
@@ -27,5 +28,6 @@ export const icon = {
 };
 
 export const modal = {
+  changeRole: 'changeRole',
   enableTwoFactorAuth: 'enableTwoFactorAuth',
 };

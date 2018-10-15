@@ -6,13 +6,26 @@ import MenuItem from './MenuItem';
 import './style.css';
 
 // TODO: this is a bit rubbish
-const Menu = ({ data, isDropdown, selectedMenuItemId, handleMenuItemClick }) => {
-  const cssClasses = classnames('menu', {
-    'menu--dropdown': isDropdown,
-  });
+const Menu = ({ data, selectedMenuItemId }) => {
+  // const cssClasses = classnames('menu', {
+  //   'menu--dropdown': isDropdown,
+  // });
 
-  const getItemList = items => items.map((item) => {
-    const { id, icon, name, description, path, isDownload } = item;
+  // const getItemList = items => items.map((item) => getItem(item));
+
+  // const getItem = item => (
+  //   <div className="menu-item">
+  //     <MenuItem
+  //       icon={item.icon}
+  //       name={item.name}
+  //       path={item.path}
+  //       description={item.description}
+  //     />
+  //   </div>
+  // );
+
+  const getItem = item => {
+    const { id, icon, name, description, path, handleClick, isDownload } = item;
     const isActive = selectedMenuItemId === id;
 
     const menuItem = (
@@ -26,26 +39,15 @@ const Menu = ({ data, isDropdown, selectedMenuItemId, handleMenuItemClick }) => 
       />
     );
 
-    return handleMenuItemClick ?
-      <div className="menu-item" key={id} onClick={handleMenuItemClick(id)}>{menuItem}</div> :
-      <Link to={path} key={id} isDownload={isDownload} className="menu-item">{menuItem}</Link>;
-  });
+    return handleClick ? <div className="menu-item" key={id} onClick={handleClick}>{menuItem}</div>
+      : path ? <Link className="menu-item" to={path} key={id} isDownload={isDownload}>{menuItem}</Link>
+      : null;
+  };
 
-  const getItem = item => (
-    <div className="menu-item">
-      <MenuItem
-        icon={item.icon}
-        name={item.name}
-        path={item.path}
-        description={item.description}
-      />
-    </div>
-  );
-
-  const items = data instanceof Array ? getItemList(data) : getItem(data);
+  const items = Array.isArray(data) ? data.map(item => getItem(item)) : getItem(data);
 
   return (
-    <div className={cssClasses}>
+    <div className="menu">
       {items}
     </div>
   );
@@ -53,12 +55,11 @@ const Menu = ({ data, isDropdown, selectedMenuItemId, handleMenuItemClick }) => 
 
 Menu.propTypes = {
   data: PropTypes.oneOfType([
-    PropTypes.objectOf(PropTypes.string),
-    PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
+    PropTypes.object,
+    PropTypes.arrayOf(PropTypes.object),
   ]),
   selectedMenuItemId: PropTypes.string,
   isDropdown: PropTypes.bool,
-  handleMenuItemClick: PropTypes.func,
 };
 
 export default Menu;

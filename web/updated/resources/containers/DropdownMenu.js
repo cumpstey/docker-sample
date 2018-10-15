@@ -12,22 +12,22 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   closeDropdownMenu: uiActions.closeDropdownMenu,
-  unsetCurrentUser: currentUserActions.unset,
+  // unsetCurrentUser: currentUserActions.unset,
   push,
 }, dispatch);
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   ...ownProps,
-  handleMenuItemClick: id => () => { // TODO: This is bonkers - it shouldn't be defined here, completely separate from the rest of the menu config
-    if (id === 'logout') {
-      dispatchProps.unsetCurrentUser();
-      dispatchProps.push(config.routes.login);
-    }
+  // handleMenuItemClick: id => () => { // TODO: This is bonkers - it shouldn't be defined here, completely separate from the rest of the menu config
+  //   if (id === 'logout') {
+  //     dispatchProps.unsetCurrentUser();
+  //     dispatchProps.push(config.routes.login);
+  //   }
 
-    if (id === 'settings') {
-      dispatchProps.push(config.routes.account);
-    }
-  },
+  //   if (id === 'settings') {
+  //     dispatchProps.push(config.routes.account);
+  //   }
+  // },
   handleBackgroundClick: (event) => {
     event.stopPropagation();
     dispatchProps.closeDropdownMenu();

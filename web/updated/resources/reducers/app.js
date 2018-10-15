@@ -9,7 +9,7 @@ const initialState = {
 const app = (state = initialState, action) => {
   switch (action.type) {
     
-    case 'SET_ROLE': {
+    case types.ROLE_SET: {
       const { role } = action.payload;
 
       return { ...state, role };

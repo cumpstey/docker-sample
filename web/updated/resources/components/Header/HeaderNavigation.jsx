@@ -5,9 +5,19 @@ import config from '../../configuration';
 import { role } from '../../constants';
 
 const HeaderNavigation = (props) => {
+  console.log(props);
+
   switch (props.role) {
 
     case role.administrator:
+      return (
+        <div className="header-nav">
+          <Link className="header-nav-item" to={config.routes.dashboard}>Dashboard</Link>
+          <Link className="header-nav-item" to={config.routes.userManagement}>User management</Link>
+        </div>
+      );
+
+    case role.manager:
       return (
         <div className="header-nav">
           <Link className="header-nav-item" to={config.routes.dashboard}>Dashboard</Link>

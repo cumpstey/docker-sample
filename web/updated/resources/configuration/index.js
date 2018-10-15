@@ -19,7 +19,8 @@ export const routes = {
   verifyEmail: '/verify-email/:userId/:token',
 
   account: '/account',
-  twoFaSetup: '/account/two-factor-setup',
+
+  userManagement: '/admin/user-management',
 
   // logout: '/logout',
   // error: '/error',
@@ -44,20 +45,20 @@ export default {
   rootUrl,
   backgroundImageUrl: `/${backgroundImage}`,
   forms,
-  menus: { // TODO: this shouldn't be configured here!
-    settings: {
-      id: 'settings',
-      icon: icon.person,
-      name: 'Account settings',
-      path: routes.account,
-      description: 'Change your account details and password',
-    },
-    logout: {
-      id: 'logout',
-      icon: icon.logout,
-      name: 'Log out',
-      // path: routes.logout,
-      description: 'Log out of this account',
-    },
-  },
+  // menus: { // TODO: this shouldn't be configured here!
+  //   settings: {
+  //     id: 'settings',
+  //     icon: icon.person,
+  //     name: 'Account settings',
+  //     path: routes.account,
+  //     description: 'Change your account details and password',
+  //   },
+  //   logout: {
+  //     id: 'logout',
+  //     icon: icon.logout,
+  //     name: 'Log out',
+  //     // path: routes.logout,
+  //     description: 'Log out of this account',
+  //   },
+  //},
 };

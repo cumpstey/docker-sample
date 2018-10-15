@@ -7,7 +7,14 @@ export const showMessage = (text, type) => ({
   payload: { text, type },
 });
 
-export const hideMessage = (id) => ({
+export const hideMessage = id => ({
   type: types.MESSAGE_HIDE,
   payload: { id },
+});
+
+// Role
+
+export const setRole = role => ({
+  type: types.ROLE_SET,
+  payload: { role },
 });

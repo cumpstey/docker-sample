@@ -36,11 +36,7 @@ import VerifyEmailPage from './containers/VerifyEmailPage';
 import DashboardPage from './containers/DashboardPage';
 import AccountPage from './containers/AccountPage';
 
-// TODO: This was called on router.onUpdate, but I believe this no longer exists.
-// Should move into the page components maybe.
-function scrollTop() {
-  if (this.state.location.action === 'PUSH') window.scrollTo(0, 0);
-}
+import UserManagementPage from './containers/UserManagementPage';
 
 const rootElement = document.getElementById('root');
 
@@ -67,10 +63,13 @@ render(
     <ConnectedRouter history={history}>
     <App>
       <Route path={routes.dashboard} exact component={DashboardPage} />
+
       <Route path={routes.login} component={LoginPage} />
       <Route path={routes.register} component={RegisterPage} />
       <Route path={routes.verifyEmail} component={VerifyEmailPage} />
       <Route path={routes.account} component={AccountPage} />
+
+      <Route path={routes.userManagement} component={UserManagementPage} />
         {/* <Route path="error" component={ErrorPage} />
         <Route path="sign-up/:token" component={CreatePasswordPage} />
         <Route path="forgot-password" component={ForgotPasswordPage} />

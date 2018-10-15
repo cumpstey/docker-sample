@@ -39,12 +39,8 @@ namespace DockerSample.Api.Helpers
         /// </summary>
         public async Task SeedRolesAsync()
         {
-            // Create Administrator role
-            if (!await _roleManager.RoleExistsAsync(Roles.Administrator))
-            {
-                var role = new IdentityRole(Roles.Administrator);
-                var result = await _roleManager.CreateAsync(role);
-            }
+            await EnsureRoleExists(Roles.Administrator);
+            await EnsureRoleExists(Roles.Manager);
         }
 
         /// <summary>
@@ -66,6 +62,23 @@ namespace DockerSample.Api.Helpers
             if (adminResult.Succeeded)
             {
                 await _userManager.AddToRoleAsync(admin, Roles.Administrator);
+                await _userManager.AddToRoleAsync(admin, Roles.Manager);
+            }
+
+            // Create manager user, email confirmed, no 2FA
+            var manager = new ApplicationUser
+            {
+                UserName = "manager@example.com",
+                Email = "admin@example.com",
+                FirstName = "Bill",
+                LastName = "Brown",
+                EmailConfirmed = true,
+                TwoFactorEnabled = false,
+            };
+            var managerResult = await _userManager.CreateAsync(manager, "Password[1]");
+            if (managerResult.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(manager, Roles.Manager);
             }
 
             // Create standard user, email confirmed, no 2FA
@@ -105,6 +118,19 @@ namespace DockerSample.Api.Helpers
                 TwoFactorEnabled = true,
             };
             var user3Result = await _userManager.CreateAsync(user3, "Password[1]");
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private async Task EnsureRoleExists(string roleName)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                var role = new IdentityRole(roleName);
+                var result = await _roleManager.CreateAsync(role);
+            }
         }
 
         #endregion
