@@ -640,7 +640,7 @@ namespace DockerSample.Api.Controllers
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("TwoFactAuth"),
+                _urlEncoder.Encode(_applicationSettings.AuthenticatorAppName),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

@@ -30,7 +30,7 @@ const createMenu = (props) => {
   if (props.canChangeRole) {
     basic.push({
       id: 'chooseRole',
-      icon: icon.changeRole,
+      icon: icon.tools,
       name: 'Choose role',
       handleClick: props.handleChangeRole,
       description: 'View as a different role',

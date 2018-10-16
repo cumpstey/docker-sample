@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import TextField from '../components/TextField';
+import TextField from '../components/formElements/TextField';
 import config from '../configuration';
 import * as formActions from '../actions/forms';
 

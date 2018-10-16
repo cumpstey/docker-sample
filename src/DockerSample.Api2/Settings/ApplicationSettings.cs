@@ -15,5 +15,7 @@ namespace DockerSample.Api.Settings
         public string JwtSecret { get; set; }
 
         public Uri FrontEndUri { get; set; }
+
+        public string AuthenticatorAppName { get; set; }
     }
 }

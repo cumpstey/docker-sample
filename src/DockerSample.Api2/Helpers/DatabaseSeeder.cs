@@ -69,7 +69,7 @@ namespace DockerSample.Api.Helpers
             var manager = new ApplicationUser
             {
                 UserName = "manager@example.com",
-                Email = "admin@example.com",
+                Email = "manager@example.com",
                 FirstName = "Bill",
                 LastName = "Brown",
                 EmailConfirmed = true,

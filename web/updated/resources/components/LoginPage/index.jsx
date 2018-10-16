@@ -19,20 +19,6 @@ const LoginPage = props =>
       {props.requireTwoFactorAuth
         ? <LoginTwoFactorForm />
         : <LoginForm />}
-      {/* {props.generalError &&
-        <FormMessage text={props.generalError} type="error" />
-      }
-      <Form handleSubmit={props.handleSignInClick}>
-        <TextField id="email" formId={FORM_ID} />
-        <TextField id="password" formId={FORM_ID} />
-        <Button
-          text="Sign in"
-          color="blue"
-          isDisabled={!props.canSubmit}
-          handleClick={props.handleSubmit}
-          fullWidth
-        />
-      </Form> */}
     </AuthBox>
   </Layout>;
 

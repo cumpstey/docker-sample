@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Button from '../Button';
-import Form from '../Form';
+import Button from '../formElements/Button';
+import Form from '../formElements/Form';
 import Layout from '../LayoutAuthenticated';
 import OptionsBar from '../OptionsBar';
 import './style.css';

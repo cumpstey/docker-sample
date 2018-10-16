@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
 import uuidv4 from 'uuid/v4';
+import { getRoleFromToken } from '../selectors';
 import * as types from '../types/app';
-import * as authenticationTypes from '../types/authentication';
+import * as impersonateRoleTypes from '../types/impersonateRole';
 import * as currentUserTypes from '../types/currentUser';
 
 const initialState = {
@@ -12,23 +12,13 @@ const initialState = {
 const app = (state = initialState, action) => {
   switch (action.type) {
     
-    case authenticationTypes.SET_TOKEN: {
-      const { token } = action.payload;
+    case impersonateRoleTypes.SET: {
+      const { role } = action.payload;
 
-      try {
-        const decoded = jwt.decode(token, { complete: true });
-        const { role } = decoded.payload;
-
-        return { ...state, role }
-      } catch {
-        // If it's not a valid token, we don't need to deal with it here - it'll be caught elsewhere.
-        const role = null;
-
-        return { ...state, role }
-      }
+      return { ...state, role }
     }
 
-    case currentUserTypes.UNSET: {
+    case currentUserTypes.USER_UNSET: {
       const role = null;
 
       return { ...state, role }

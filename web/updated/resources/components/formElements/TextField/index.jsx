@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import CrossIcon from '../../assets/svg/cross.svg';
+import Svg from '../../Svg';
+import { icon } from '../../../constants';
 import './style.css';
 
 const TextField = ({ id, fieldDefinition, fieldState, handleChange, hasErrors, errors, ...props }) => {
@@ -57,7 +58,7 @@ const TextField = ({ id, fieldDefinition, fieldState, handleChange, hasErrors, e
     <div className={cssClasses}>
       {label && <label className="text-field-label" htmlFor={id}>{label}</label>}
       <div className="text-field-inner">
-        {hasErrors && <CrossIcon />}
+        {hasErrors && <Svg name={icon.cross} />}
         {content}
       </div>
       {hasErrors &&

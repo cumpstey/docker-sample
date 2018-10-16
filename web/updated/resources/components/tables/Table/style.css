@@ -1,0 +1,144 @@
+.table {
+  fill: #C8D0DE;
+}
+
+.table svg {
+  width: 16px;
+  height: 16px;
+}
+
+.table-header {
+  display: flex;
+  background-color: #F5F8FA;
+  border-top: 1px solid #E3E8EF;
+  border-bottom: 1px solid #E3E8EF;
+  color: #7F8FA4;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #E6EAEE;
+}
+
+.table-row:last-child {
+  border-bottom-width: 0px;
+}
+
+.table-row--selectable {
+  cursor: pointer;
+}
+
+.table-cell {
+  flex: 1 1 auto;
+  display: flex;
+  box-sizing: content-box;
+  padding: 0 15px;
+}
+
+.table-body .table-cell {
+  height: 65px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.table-header .table-cell {
+  height: 36px;
+  color: #7F8FA4;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-header .table-cell-value {
+  white-space: nowrap;
+  margin-right: 5px;
+}
+
+.table-body .table-cell-value {
+  min-height: 16px;
+  width: 100%;
+}
+
+.table-header .table-cell--sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.table-header .table-cell-icon {
+  flex: 0 0 16px;
+  visibility: hidden;
+}
+
+.table-header .table-cell:hover .table-cell-icon,
+.table-header .table-cell--sorted .table-cell-icon {
+  visibility: visible;
+}
+
+.table-cell-value {
+  font-weight: 600;
+}
+
+.table-cell-label {
+  font-size: 12px;
+  color: #7F8FA4;
+}
+
+.table-cell--selection {
+  flex: 0 0 80px;
+}
+
+.table-cell--type {
+  flex: 0 0 160px;
+}
+
+.table-cell--details {
+  flex: 1 1 100%;
+  color: #1A91EB;
+}
+
+.table-cell--date {
+  flex: 0 0 160px;
+  color: #7F8FA4;
+}
+
+.table-row--selected {
+  background-color: #1A91EB;
+  border-bottom: 1px solid #1A91EB;
+  fill: white;
+}
+
+.table-row--selected .table-cell {
+  color: white;
+}
+
+.table-cell-list-item--green {
+  color: #39B54A;
+  fill: #39B54A;
+}
+
+.table-cell-list-item--orange {
+  color: #E2B00E;
+  fill: #E2B00E;
+}
+
+.table-cell-list-item--amber {
+  color: #E2B00E;
+  fill: #E2B00E;
+}
+
+.table-cell-list-item--red {
+  color: #C83118;
+  fill: #C83118;
+}
+
+.table-cell-list-item--gray {
+  color: #68768C;
+}
+
+.table-cell-list-item--blue {
+  color: #1831C8;
+}

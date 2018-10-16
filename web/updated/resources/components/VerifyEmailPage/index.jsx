@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import FormMessage from '../FormMessage';
+import FormMessage from '../formElements/FormMessage';
 import Layout from '../LayoutAnonymous';
 import Link from '../Link';
 import AuthBox from '../AuthBox';

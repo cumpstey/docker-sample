@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '../Button';
-import Form from '../Form';
-import FormMessage from '../FormMessage';
+import Button from '../formElements/Button';
+import Form from '../formElements/Form';
+import FormMessage from '../formElements/FormMessage';
 import TextField from '../../containers/TextField';
 import { FORM_ID } from '../../configuration/forms/loginTwoFactor';
 

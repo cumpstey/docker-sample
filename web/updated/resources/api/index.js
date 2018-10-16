@@ -29,7 +29,10 @@ export const disableTwoFactorAuth = data => request.put(`${root}/account/2fa/dis
 export const getMe = () => request.get(`${root}/account`, { headers: getHeaders() });
 
 // Authorisation
-export const impersonateRole = role => request.get(`${root}/account/impersonate-role?role=${role ? role : ''}`, { headers: getHeaders() });
+export const impersonateRole = role => request.get(`${root}/account/impersonate-role`, { headers: getHeaders(), params: { role: role || '' } });
+
+// User management
+export const getUsers = params => request.get(`${root}/users`, { headers: getHeaders(), params: { ...params } });
 
 
 // export const updateMe = data =>

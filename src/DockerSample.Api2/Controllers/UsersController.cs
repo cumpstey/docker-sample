@@ -1,162 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using DockerSample.Api.Dtos;
 using DockerSample.Api.Entities;
 using DockerSample.Api.Helpers;
-using DockerSample.Api.Services;
+using DockerSample.Api.Settings;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DockerSample.Api.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    [Authorize(Roles = Roles.Administrator)]
+    [Route(ApiRoot + "users")]
+    public class UsersController : BaseApiController
     {
         #region Fields
 
-        private IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
-        private readonly AppSettings _appSettings;
+        private readonly ApplicationSettings _applicationSettings;
 
         #endregion
 
         #region Constructor
 
+        /// <summary>
+        /// Initialises a new instance of the <see cref="UsersController"/> class.
+        /// </summary>
+        /// <param name="userManager">User manager</param>
+        /// <param name="mapper">Mapper</param>
+        /// <param name="applicationSettings">Settings</param>
         public UsersController(
-            IUserService userService,
+            UserManager<ApplicationUser> userManager,
             IMapper mapper,
-            IOptions<AppSettings> appSettings
+            IOptions<ApplicationSettings> applicationSettings
         )
         {
-            _userService = userService;
+            _userManager = userManager;
             _mapper = mapper;
-            _appSettings = appSettings.Value;
+            _applicationSettings = applicationSettings.Value;
         }
 
         #endregion
 
+        #region Action methods
+
         /// <summary>
-        /// Authenticates a user by username and password
+        /// Returns a paged collection of users matching a query.
         /// </summary>
-        /// <param name="userDto">Credentials</param>
-        /// <returns>User details, and a JWT authentication token</returns>
-        [AllowAnonymous]
-        [HttpPost("authenticate")]
+        /// <param name="request">Request object containing query parameters</param>
+        /// <returns>Paged collection of users</returns>
+        /// <response code="200">Success</response>
+        /// <response code="401">Unauthorized</response>
+        [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
-        public IActionResult Authenticate([FromBody]UserDto userDto)
+        public async Task<IActionResult> Get([FromQuery]PagedRequestDto request)
         {
-            // Authenticate user
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
+            var page = request.GetSanitizedPage();
+            var pageSize = request.GetSanitizedPageSize();
 
-            // If invalid credentials provided, return an unauthorized response
-            if (user == null)
+            var totalCount = await _userManager.Users.CountAsync();
+            var users = await _userManager.Users.Skip((page - 1) * pageSize).Take(pageSize).ToArrayAsync();
+            var responseUsers = await Task.WhenAll(users.Select(async user =>
             {
-                return Unauthorized();
-            }
+                var userDto = _mapper.Map<UserDto>(user);
+                userDto.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+                return userDto;
+            }));
 
-            // Generate JWT token to return in the response
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            return Ok(new GetResponseDto()
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Users = responseUsers,
+                Meta = new MetaDto
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            // Return basic user info (without password) and token to store client side
-            return Ok(new
-            {
-                Id = user.Id,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Token = tokenString
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                },
             });
         }
 
-        [AllowAnonymous]
-        [HttpPost("register")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public IActionResult Register([FromBody]UserDto userDto)
-        {
-            // Map dto to entity
-            var user = _mapper.Map<User>(userDto);
-
-            try
-            {
-                // Create new user. This should incorporate some kind of verification process.
-                var createdUser = _userService.Create(user, userDto.Password);
-                return Ok();
-            }
-            catch (AppException ex)
-            {
-                // Return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
-            return Ok(userDtos);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = _userService.GetById(id);
-            var userDto = _mapper.Map<UserDto>(user);
-            return Ok(userDto);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDto userDto)
-        {
-            // map dto to entity and set id
-            var user = _mapper.Map<User>(userDto);
-            user.Id = id;
-
-            try
-            {
-                // save 
-                _userService.Update(user, userDto.Password);
-                return Ok();
-            }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            _userService.Delete(id);
-            return Ok();
-        }
+        #endregion
     }
-
 }

@@ -16,7 +16,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Compile Remove="Controllers\UsersController.cs" />
     <Compile Remove="Entities\UserRole.cs" />
     <Compile Remove="Services\IPasswordHasher.cs" />
     <Compile Remove="Services\IUserService.cs" />

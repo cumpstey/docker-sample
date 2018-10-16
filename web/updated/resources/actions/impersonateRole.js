@@ -3,7 +3,10 @@ import * as authenticationActions from './authentication';
 import * as errorActions from './error';
 import * as types from '../types/impersonateRole';
 
-// Role
+export const set = role => ({
+  type: types.SET,
+  payload: { role },
+});
 
 export const startFetch = () => ({
   type: types.FETCHING,

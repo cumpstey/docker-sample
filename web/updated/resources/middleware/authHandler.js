@@ -1,6 +1,5 @@
 import { replace } from 'connected-react-router';
 import pathToRegexp from 'path-to-regexp';
-import jwt from 'jsonwebtoken';
 import * as currentUserActions from '../actions/currentUser/user';
 import { routes } from '../configuration';
 import { storage } from '../constants';
@@ -8,6 +7,7 @@ import * as user from '../helpers/user';
 import * as authenticationTypes from '../types/authentication';
 import * as currentUserTypes from '../types/currentUser';
 import * as routerTypes from '../types/router';
+import * as impersonateRoleActions from '../actions/impersonateRole';
 
 const anonymousRoutes = [
   routes.login,
@@ -42,6 +42,9 @@ export default store => next => (action) => {
     // If user is logged in, but user details are not in the state, load them.
     if (isLoggedIn && !state.currentUser.userIsLoaded && !state.currentUser.userIsLoading) {
       store.dispatch(currentUserActions.fetch());
+
+      const role = user.getRoleFromToken();
+      store.dispatch(impersonateRoleActions.set(role));
     }
 
     // If user is not logged in and we're not on a page available when logged out, redirect to the login page.
@@ -60,6 +63,9 @@ export default store => next => (action) => {
     const { token } = action.payload;
 
     localStorage.setItem(storage.token, token);
+    
+    const role = user.getRoleFromToken();
+    store.dispatch(impersonateRoleActions.set(role));
   }
 
   // Remove stored authentication token

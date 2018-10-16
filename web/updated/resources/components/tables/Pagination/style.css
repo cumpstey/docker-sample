@@ -1,0 +1,34 @@
+.pagination-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid #e6eaee;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  fill: #ced0da;
+  user-select: none;
+}
+
+.pagination-button:hover:not(.pagination-button--disabled) {
+  border: 1px solid #ced0da;
+  cursor: pointer;
+  fill: #68768C;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pagination-button svg {
+  width: 15px;
+}
+
+.pagination-text {
+  font-size: 12px;
+  color: #7F8FA4;
+}

@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import QRCode from 'qrcode';
-import Button from '../../Button';
-import Form from '../../Form';
+import Button from '../../formElements/Button';
+import Form from '../../formElements/Form';
+import FormMessage from '../../formElements/FormMessage';
 import TextField from '../../../containers/TextField';
 import * as actions from '../../../actions/forms/enableTwoFactorAuth';
 import * as selectors from '../../../selectors';
@@ -17,6 +18,7 @@ const mapStateToProps = state => ({
   authenticatorUrl: state.enableTwoFactorAuthForm.setup.authenticatorUrl,
   showSuccess: state.enableTwoFactorAuthForm.success,
   recoveryCodes: state.enableTwoFactorAuthForm.recoveryCodes,
+  generalError: state[FORM_ID].errors[''],
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -24,7 +26,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   handleSubmit: actions.submit,
 }, dispatch);
 
-class EnableTwoFactorAuth extends Component {
+class EnableTwoFactorAuthForm extends Component {
 
   componentDidMount() {
     this.props.fetchTwoFactorAuthSetup();
@@ -45,6 +47,9 @@ class EnableTwoFactorAuth extends Component {
         <p>Scan the QR code with your authenticator app. Alternatively, manually enter the shared key.</p>
         <canvas id="qrcanvas"></canvas>
         <p>Shared key: {this.props.sharedKey}</p>
+        {this.props.generalError &&
+          <FormMessage text={this.props.generalError} type="error" />
+        }
         <Form handleSubmit={this.props.handleSubmitClick}>
           <TextField id="code" formId={FORM_ID} />
           <Button
@@ -65,7 +70,7 @@ class EnableTwoFactorAuth extends Component {
   }
 }
 
-EnableTwoFactorAuth.propTypes = {
+EnableTwoFactorAuthForm.propTypes = {
   fetchTwoFactorAuthSetup: PropTypes.func,
   handleSubmit: PropTypes.func,
   canSubmit: PropTypes.bool,
@@ -75,4 +80,4 @@ EnableTwoFactorAuth.propTypes = {
   recoveryCodes: PropTypes.arrayOf(PropTypes.string),
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EnableTwoFactorAuth);
+export default connect(mapStateToProps, mapDispatchToProps)(EnableTwoFactorAuthForm);

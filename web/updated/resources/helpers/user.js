@@ -1,7 +1,22 @@
+import jwt from 'jsonwebtoken';
 import { storage } from '../constants';
 import { boolify, intify, stringify } from './xify';
 
 export const isLoggedIn = () => Boolean(localStorage.getItem(storage.token));
+
+export const getRoleFromToken = token => {
+  token = token || localStorage.getItem(storage.token);
+
+  try {
+    const decoded = jwt.decode(token, { complete: true });
+    const { role } = decoded.payload;
+
+    return role;
+  } catch {
+    // If it's not a valid token, we don't need to deal with it here - it'll be caught elsewhere.
+    return null;
+  }
+};
 
 export const getShortUserName = props =>
   props.user.firstName && `${props.user.firstName} ${props.user.lastName.substring(0, 1)}.`;
