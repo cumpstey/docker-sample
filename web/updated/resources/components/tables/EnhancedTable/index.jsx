@@ -1,28 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
-import Button from '../Button';
-import Pagination from '../../containers/Pagination';
-import Table from '../../containers/Table';
+import Button from '../../formElements/Button';
+import Pagination from '../Pagination';
+import Table from '../Table';
 import './style.css';
 
 const EnhancedTable = (props) => {
-  const hasData = props.rows.length > 0;
 
-  const button = (
-    <Button
-      text="Download Report"
-      color="gray"
-      icon="export"
-      isDisabled={!hasData}
-    />
-  );
-
-  const link = (
-    <Link to={props.exportDataPath} download target="_blank">
-      {button}
-    </Link>
-  );
+  const showPagination = props.meta.totalPages > 1 && !props.isLoading;
 
   return (
     <div className="enhanced-table">
@@ -34,13 +20,17 @@ const EnhancedTable = (props) => {
           </div>
           <div className="enhanced-table-header-buttons">
             {props.buttons}
-            {props.exportDataPath && hasData && link}
-            {props.exportDataPath && !hasData && button}
           </div>
         </div>
-        <Table columns={props.columns} rows={props.rows} isLoading={props.isLoading} id={props.id} />
+        <Table columns={props.columns} rows={props.rows} id={props.id} />
       </div>
-      {!props.noPagination && <Pagination isLoading={props.isLoading} />}
+      {showPagination &&
+        <Pagination
+          totalPages={props.meta.totalPages}
+          page={props.meta.page}
+          handlePageChange={page => props.updateQuery({page})}
+        />
+      }
     </div>
   );
 };
@@ -50,11 +40,11 @@ EnhancedTable.propTypes = {
   rows: PropTypes.array,
   primaryHeading: PropTypes.string,
   secondaryHeading: PropTypes.string,
-  exportDataPath: PropTypes.string,
   id: PropTypes.string,
   isLoading: PropTypes.bool,
-  noPagination: PropTypes.bool,
   buttons: PropTypes.arrayOf(PropTypes.element),
+  meta: PropTypes.object,
+  updateQuery: PropTypes.func,
 };
 
 export default EnhancedTable;

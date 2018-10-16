@@ -13,6 +13,8 @@ export const role = {
 };
 
 export const icon = {
+  arrowLeft: 'arrow-left',
+  arrowRight: 'arrow-right',
   area: 'area',
   calendar: 'calendar',
   cart: 'cart',
@@ -35,6 +37,7 @@ export const icon = {
   sortUp: 'sort-up',
   support: 'support',
   tools: 'tools',
+  unsorted: 'unsorted',
 };
 
 export const modal = {

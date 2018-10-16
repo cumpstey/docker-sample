@@ -2,12 +2,12 @@ import { combineReducers } from 'redux';
 
 import app from './app';
 import currentUser from './currentUser';
-import ui from './ui';
-
 import enableTwoFactorAuthForm from './forms/enableTwoFactorAuth';
 import loginForm from './forms/login';
 import loginTwoFactorForm from './forms/loginTwoFactor';
 import registerForm from './forms/register';
+import ui from './ui';
+import users from './users';
 import verifyEmailForm from './forms/verifyEmail';
 
 export default combineReducers({
@@ -17,6 +17,7 @@ export default combineReducers({
   loginForm,
   loginTwoFactorForm,
   registerForm,
-  verifyEmailForm,
   ui,
+  users,
+  verifyEmailForm,
 });

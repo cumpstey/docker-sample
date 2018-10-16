@@ -1,0 +1,37 @@
+.user-management-page-content {
+  margin: 0 20px;
+}
+
+.user-management-page-container {
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 35px 0;
+}
+
+.user-management-page .table-cell-list-item {
+  margin-right: 30px;
+}
+
+.user-management-page .table-cell--id {
+  flex: 0 1 60px;
+}
+
+.user-management-page .table-cell--name {
+  flex: 0 1 200px;
+}
+
+.user-management-page .table-cell--email {
+  flex: 0 1 200px;
+}
+
+.user-management-page .table-cell--role {
+  flex: 0 1 100px;
+}
+
+.user-management-page .table-cell--status {
+  flex: 0 1 60px;
+}
+
+.user-management-page .table-cell--actions {
+  flex: 1 0 100px;
+}

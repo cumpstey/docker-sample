@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import Svg from '../Svg';
-import { toParamCase, findColumnItem } from '../../helpers';
+import Svg from '../../Svg';
+import { toParamCase, findColumnItem } from '../../../helpers/table';
+import { icon } from '../../../constants';
 
 const TableHeaderCell = ({ data, orderBy, sortBy, handleClick }) => {
   const { id, isSortable, text } = data;
@@ -11,8 +12,9 @@ const TableHeaderCell = ({ data, orderBy, sortBy, handleClick }) => {
     'table-cell--sortable': isSortable,
   });
 
-  const sortedIconName = orderBy === 'asc' ? 'sort-up' : 'sort-down';
-  const iconName = !sortBy ? 'unsorted' : sortedIconName;
+  const iconName = !sortBy
+    ? icon.unsorted
+    : orderBy === 'asc' ? icon.sortUp : icon.sortDown;
   const onClick = isSortable ? handleClick : false;
   const setColorIcon = id === 'communications' ? `table-cell-icon table-cell-list-item--${sortBy}` : 'table-cell-icon';
 

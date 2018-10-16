@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import ArrowLeftIcon from '../../assets/svg/arrow-left.svg';
+import ArrowRightIcon from '../../assets/svg/arrow-right.svg';
 import AreaIcon from '../../assets/svg/area.svg';
 import CalendarIcon from '../../assets/svg/calendar.svg';
 import CartIcon from '../../assets/svg/cart.svg';
@@ -23,57 +25,64 @@ import SortDownIcon from '../../assets/svg/sort-down.svg';
 import SortUpIcon from '../../assets/svg/sort-up.svg';
 import SupportIcon from '../../assets/svg/support.svg';
 import ToolsIcon from '../../assets/svg/tools.svg';
+import UnsortedIcon from '../../assets/svg/unsorted.svg';
 
 import { icon } from '../../constants';
 
 const Svg = ({ name, className, fill }) => {
   switch (name) {
+    case icon.arrowLeft:
+      return <ArrowLeftIcon className={className} />;
+    case icon.arrowRight:
+      return <ArrowRightIcon className={className} />;
     case icon.area:
-      return <AreaIcon className={className} />
+      return <AreaIcon className={className} />;
     case icon.calendar:
-      return <CalendarIcon className={className} />
+      return <CalendarIcon className={className} />;
     case icon.cart:
-      return <CartIcon className={className} />
+      return <CartIcon className={className} />;
     case icon.check:
-      return <CheckIcon className={className} />
+      return <CheckIcon className={className} />;
     case icon.close:
-      return <CloseIcon className={className} />
+      return <CloseIcon className={className} />;
     case icon.compass:
-      return <CompassIcon className={className} />
+      return <CompassIcon className={className} />;
     case icon.cross:
-      return <CrossIcon className={className} />
+      return <CrossIcon className={className} />;
     case icon.expandLess:
-      return <ExpandLessIcon className={className} />
+      return <ExpandLessIcon className={className} />;
     case icon.expandMore:
-      return <ExpandMoreIcon className={className} />
+      return <ExpandMoreIcon className={className} />;
     case icon.gnome2:
-      return <Gnome2Icon className={className} />
+      return <Gnome2Icon className={className} />;
     case icon.info:
-      return <InfoIcon className={className} />
+      return <InfoIcon className={className} />;
     case icon.intertwingly:
-      return <IntertwinglyIcon className={className} />
+      return <IntertwinglyIcon className={className} />;
     case icon.logout:
-      return <LogoutIcon className={className} />
+      return <LogoutIcon className={className} />;
     case icon.menu:
-      return <MenuIcon className={className} />
+      return <MenuIcon className={className} />;
     case icon.person:
-      return <PersonIcon className={className} />
+      return <PersonIcon className={className} />;
     case icon.pin:
-      return <PinIcon className={className} />
+      return <PinIcon className={className} />;
     case icon.radioSelected:
-      return <RadioSelectedIcon className={className} />
+      return <RadioSelectedIcon className={className} />;
     case icon.radio:
-      return <RadioIcon className={className} />
+      return <RadioIcon className={className} />;
     case icon.sortDown:
-      return <SortDownIcon className={className} />
+      return <SortDownIcon className={className} />;
     case icon.sortUp:
-      return <SortUpIcon className={className} />
+      return <SortUpIcon className={className} />;
     case icon.support:
-      return <SupportIcon className={className} />
+      return <SupportIcon className={className} />;
     case icon.tools:
-      return <ToolsIcon className={className} />
+      return <ToolsIcon className={className} />;
+    case icon.unsorted:
+      return <UnsortedIcon className={className} />;
     default:
-      return <CrossIcon className={className} />
+      return <CrossIcon className={className} />;
   }
 }
 

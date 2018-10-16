@@ -21,6 +21,14 @@ export const getRoleFromToken = token => {
 export const getShortUserName = props =>
   props.user.firstName && `${props.user.firstName} ${props.user.lastName.substring(0, 1)}.`;
 
+export const mapRawUsersData = users => Array.isArray(users)
+  ? users.map(user => {
+    const mapped = mapRawUserData(user);
+    mapped.roles = mapRawRolesData(user);
+    return mapped;
+  })
+  : [];
+
 export const mapRawUserData = user => ({
   firstName: stringify(user.firstName),
   lastName: stringify(user.lastName),
